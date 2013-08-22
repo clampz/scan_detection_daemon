@@ -25,7 +25,8 @@ void scan_fatal(const char *failed_in, const char *errbuf) {
 }
 
 
-//
+// main creates a listener and captures packets while looking 
+// for SYN flags in the TCP header
 void main(int argc, char ** argv) {
 
 	int i = 0;
@@ -43,6 +44,7 @@ void main(int argc, char ** argv) {
 
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
+// just testing with diff while loop condition
 	while (i++ < atoi(argv[1])) {
 
 		printf("\n\npkt # %d --\n", i);
@@ -56,7 +58,7 @@ void main(int argc, char ** argv) {
 
 }
 
-// 
+// checks for SYN flag and writes info if it finds one
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
 	const struct ip_hdr *ip_header = (const struct ip_hdr *)packet;
@@ -86,6 +88,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 
 }
 
+// takes TCP header and checks for SYN flags, returns 1 if true
 int isSYNPkt(const u_char *header_start) {
 
 	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)header_start;
