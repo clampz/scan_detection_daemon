@@ -1,7 +1,10 @@
-/* scan_detector.h
+/* malloc_dump.h
  * written by: David Weinman
  * last update: 08/21/13
  * */
+
+/* note: this code was heavily influenced by the book 'Hacking:
+ * The Art of Exploitation' by Jon Erikson */
 
 #include <stdio.h>
 #include <stdlib.h>
