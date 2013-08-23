@@ -47,9 +47,9 @@ void main(int argc, char ** argv) {
 // just testing with diff while loop condition
 	while (i++ < atoi(argv[1])) {
 
-		printf("\n\npkt # %d --\n", i);
-		//printf("\n1\n\n");
-		pcap_loop(pcap_handle, 5, caught_packet, NULL);
+		if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
+		printf("pkt # %d. ", i);
+		pcap_loop(pcap_handle, 1, caught_packet, NULL);
 		pcap_close(pcap_handle);
 	
 	}
@@ -61,24 +61,31 @@ void main(int argc, char ** argv) {
 // checks for SYN flag and writes info if it finds one
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
-	const struct ip_hdr *ip_header = (const struct ip_hdr *)packet;
-	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)packet;
-	int tcp_header_length, total_header_size, pkt_data_len;
+	const struct eth_hdr *eth_header = (const struct eth_hdr *) packet;
+	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + ETH_HDR_LEN;
+	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + ETH_HDR_LEN + sizeof(struct ip_hdr);
+	int tcp_header_length, total_header_size, pkt_data_len, i;
 	int header_size = 4 * tcp_header->tcp_offset;
 	u_char *pkt_data;
-
-	printf("\n1\n\n");
 
 	if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
 		
-        	tcp_header_length = packet+ETH_HDR_LEN+sizeof(struct ip_hdr);
+        	tcp_header_length = 4 * tcp_header->tcp_offset;
 	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
 
 		pkt_data = (u_char *)packet + total_header_size;
 		pkt_data_len = cap_header->len - total_header_size;
 
-		printf("\nsrc: %d  |  dst: %d\n", inet_ntoa(ip_header->ip_src_addr), inet_ntoa(ip_header->ip_dest_addr));
+		printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
+		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
+
+		printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
+		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
+
+		puts("\n");
+
+		printf("\nsrc ip addr: %d  |  dst ip addr: %d\n", inet_ntoa(ip_header->ip_src_addr), inet_ntoa(ip_header->ip_dest_addr));
 		printf("\ntype: %u\n", (u_int) ip_header->ip_type);
 		printf("\nID: %hu\tLength: %hu )\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
 
