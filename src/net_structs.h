@@ -36,8 +36,7 @@ struct ip_hdr {
 	unsigned char ip_ttl;          // time to live
 	unsigned char ip_type;         // protocol type
 	unsigned short ip_checksum;    // checksum
-	unsigned int ip_src_addr;      // source IP address
-	unsigned int ip_dest_addr;     // destination IP address
+	struct in_addr ip_src_addr, ip_dest_addr; // source & destination IP addresses
 
 };
 
@@ -65,7 +64,6 @@ struct tcp_hdr {
 	unsigned short tcp_urgent; // TCP urgent pointer
 
 };
-
 
 
 
