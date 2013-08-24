@@ -4,12 +4,13 @@
  * */
 
 #include <stdio.h>
-#include <netinet/in.h>
+//#include <netinet/in.h>
 #include <pcap/pcap.h>
 #include <arpa/inet.h>
 
 #include "malloc_dump.h"
-#include "net_structs.h"
+//#include "net_structs.h"
+#include "hacking-network.h"
 
 
 void scan_fatal(const char *, const char *);
@@ -38,6 +39,8 @@ void main(int argc, char ** argv) {
         char *device;
 	pcap_t *pcap_handle;
 
+	if (argc != 2) {printf("\nwrong # of args.\n\n"); exit(1);} 
+
 	device = pcap_lookupdev(errbuf);
 
 	if (device == NULL) {
@@ -63,44 +66,54 @@ void main(int argc, char ** argv) {
 // checks for SYN flag and writes info if it finds one
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
-	const struct eth_hdr *eth_header = (const struct eth_hdr *) packet;
-	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + ETH_HDR_LEN;
-	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + ETH_HDR_LEN + sizeof(struct ip_hdr);
+	printf("\nether_hdr: %lu", sizeof(struct ether_hdr));
+	printf(", ip_hdr: %lu\n\n", sizeof(struct ip_hdr));
+	printf("\nether_hdr: %lu", sizeof(const struct ether_hdr));
+	printf(", ip_hdr: %lu\n\n", sizeof(const struct ip_hdr));
+
+	const struct ether_hdr *eth_header = (const struct ether_hdr *) packet;
+//	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + ETH_HDR_LEN;
+	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + sizeof(struct ether_hdr);
+//	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + ETH_HDR_LEN + IP_HDR_LEN;
+	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + sizeof(struct ether_hdr) + sizeof(struct ip_hdr);
 	int tcp_header_length, total_header_size, pkt_data_len, i;
 	int header_size = 4 * tcp_header->tcp_offset;
 	char *src_addr, *dest_addr;
 	u_char *pkt_data;
 
-	if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
+	if (isSYNPkt(packet+ETHER_HDR_LEN+sizeof(struct ip_hdr))) {
 
-		
         	tcp_header_length = 4 * tcp_header->tcp_offset;
-	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
+//	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
+	        total_header_size = sizeof(struct ether_hdr) + sizeof(struct ip_hdr) + tcp_header_length;
 
 		pkt_data = (u_char *)packet + total_header_size;
 		pkt_data_len = cap_header->len - total_header_size;
 
-		printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
-		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
+		//printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
+		//for (i = 1; i < ETHER_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
 
-		printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
-		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
+		//printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
+		//for (i = 1; i < ETHER_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
+
+        	printf("\nsrc mac addr: %02x", eth_header->ether_src_addr[0]);
+        	for(i=1; i < ETHER_ADDR_LEN; i++)
+                	printf(":%02x", eth_header->ether_src_addr[i]);
+
+        	printf(" | dst mac addr: %02x", eth_header->ether_dest_addr[0]);
+        	for(i=1; i < ETHER_ADDR_LEN; i++)
+                	printf(":%02x", eth_header->ether_dest_addr[i]);
 
 		puts("\n");
 
-		printf("\ncaught packet 1\n");
-		src_addr = inet_ntoa(ip_header->ip_src_addr);
-		printf("\ncaught packet 2\n");
-		dest_addr = inet_ntoa(ip_header->ip_dest_addr);
-		printf("\ncaught packet 2-2\n");
+		//src_addr = inet_ntoa(ip_header->ip_src_addr);
+		//dest_addr = inet_ntoa(ip_header->ip_dest_addr);
 
-		printf("\nsrc ip addr: %s  |  dst ip addr: %s\n", src_addr, dest_addr);
-		printf("\ncaught packet 3\n");
+		printf("\nsrc ip addr: %s  |  dst ip addr: %s\n", inet_ntoa((struct in_addr) ip_header->ip_src_addr), inet_ntoa((struct in_addr) ip_header->ip_dest_addr));
 		printf("\ntype: %u\n", (u_int) ip_header->ip_type);
 		printf("\nID: %hu\tLength: %hu )\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
 
 		dump(pkt_data, pkt_data_len);
-		printf("\ncaught packet 4\n");
 
 	}
 
@@ -158,5 +171,10 @@ while true {
 
 }
 
+
+---------
+
+printf("\n1\n\n");
 */
+
 

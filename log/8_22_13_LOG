@@ -1,0 +1,1148 @@
+
+
+DEIMOS --- Scanner ---
+
+--------------------------------------------------------------------------------
+
+[23:13][nab@deimos:~/Documents]$ ifconfig
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 16436
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 0  (Local Loopback)
+        RX packets 4  bytes 340 (340.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 4  bytes 340 (340.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+p37p1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.30  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet6 fe80::6e62:6dff:fe8d:dd32  prefixlen 64  scopeid 0x20<link>
+        ether 6c:62:6d:8d:dd:32  txqueuelen 1000  (Ethernet)
+        RX packets 658  bytes 335023 (327.1 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1033  bytes 1058442 (1.0 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 46  base 0xe000  
+
+wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.16  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet6 fe80::208:54ff:fe9c:b10a  prefixlen 64  scopeid 0x20<link>
+        ether 00:08:54:9c:b1:0a  txqueuelen 1000  (Ethernet)
+        RX packets 15  bytes 2485 (2.4 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 34  bytes 6042 (5.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[23:15][nab@deimos:~/Documents]$ ifconfig
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 16436
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 0  (Local Loopback)
+        RX packets 4  bytes 340 (340.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 4  bytes 340 (340.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+p37p1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.30  netmask 255.255.255.0  broadcast 192.168.1.255                                            
+        inet6 fe80::6e62:6dff:fe8d:dd32  prefixlen 64  scopeid 0x20<link>                                            
+        ether 6c:62:6d:8d:dd:32  txqueuelen 1000  (Ethernet)                                                         
+        RX packets 668  bytes 335958 (328.0 KiB)                                                                     
+        RX errors 0  dropped 0  overruns 0  frame 0                                                                  
+        TX packets 1046  bytes 1060236 (1.0 MiB)                                                                     
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0                                                   
+        device interrupt 46  base 0xe000                                                                             
+                                                                                                                     
+wlan0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500                                                                  
+        inet6 fe80::208:54ff:fe9c:b10a  prefixlen 64  scopeid 0x20<link>                                             
+        ether 00:08:54:9c:b1:0a  txqueuelen 1000  (Ethernet)                                                         
+        RX packets 16  bytes 2636 (2.5 KiB)                                                                          
+        RX errors 0  dropped 0  overruns 0  frame 0                                                                  
+        TX packets 34  bytes 6042 (5.9 KiB)                                                                          
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0                                                   
+                                                                                                                     
+[23:15][nab@deimos:~/Documents]$ sudo nmap -sS 192.168.1.8
+[sudo] password for nab:                                                                                             
+                                                                                                                     
+Starting Nmap 6.01 ( http://nmap.org ) at 2013-08-22 23:17 PDT                                                       
+Nmap scan report for 192.168.1.8                                                                                     
+Host is up (0.0053s latency).                                                                                        
+All 1000 scanned ports on 192.168.1.8 are closed                                                                     
+MAC Address: 58:55:CA:F6:44:E5 (Apple)
+
+Nmap done: 1 IP address (1 host up) scanned in 2.78 seconds
+[23:17][nab@deimos:~/Documents]$ sudo nmap -sS 192.168.1.8
+
+Starting Nmap 6.01 ( http://nmap.org ) at 2013-08-22 23:18 PDT
+Nmap scan report for 192.168.1.8
+Host is up (0.0075s latency).
+All 1000 scanned ports on 192.168.1.8 are closed
+MAC Address: 58:55:CA:F6:44:E5 (Apple)
+
+Nmap done: 1 IP address (1 host up) scanned in 2.72 seconds
+[23:18][nab@deimos:~/Documents]$ 
+
+
+--------------------------------------------------------------------------------
+
+BT -- MBA SCANEE --
+
+af 49 04 4a 98 49 ed f0 00 00 00 00 60 02 04 00 | .I.J.I......`...
+d6 e1 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 8. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 c0 05 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+1b 27 00 00 02 04 05 b4 00 00                   | .'........
+pkt # 9. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 0d a5 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+cd 87 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 10. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 0f a5 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+cb 87 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 11. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 00 a3 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+da 89 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 12. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 49 0f a0 98 49 ed f0 00 00 00 00 60 02 04 00 | .I...I......`...
+cb 8b 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 13. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 49 1f 99 98 49 ed f0 00 00 00 00 60 02 04 00 | .I...I......`...
+bb 92 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 14. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 05 48 98 48 ed f1 00 00 00 00 60 02 04 00 | .H.H.H......`...
+d5 e4 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 15. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 0f 0b 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+cc 21 00 00 02 04 05 b4 00 00                   | .!........
+pkt # 16. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 18 0c 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+c3 20 00 00 02 04 05 b4 00 00                   | . ........
+pkt # 17. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 08 98 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+d2 94 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 18. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 07 da 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+d3 52 00 00 02 04 05 b4 00 00                   | .R........
+pkt # 19. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 0b 3b 98 48 ed f1 00 00 00 00 60 02 04 00 | .H.;.H......`...
+cf f1 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 20. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 0c 05 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+cf 27 00 00 02 04 05 b4 00 00                   | .'........
+pkt # 21. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 49 24 4a 98 49 ed f0 00 00 00 00 60 02 04 00 | .I$J.I......`...
+b6 e1 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 22. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 49 05 1f 98 49 ed f0 00 00 00 00 60 02 04 00 | .I...I......`...
+d6 0c 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 23. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 11 5e 98 48 ed f1 00 00 00 00 60 02 04 00 | .H.^.H......`...
+c9 ce 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 24. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 04 08 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+d7 24 00 00 02 04 05 b4 00 00                   | .$........
+pkt # 25. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 05 d6 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+d5 56 00 00 02 04 05 b4 00 00                   | .V........
+pkt # 26. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 16 2e 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+c4 fe 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 27. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+af 48 04 1c 98 48 ed f1 00 00 00 00 60 02 04 00 | .H...H......`...
+d7 10 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 28. pkt # 29. pkt # 30. pkt # 31. pkt # 32. pkt # 33. pkt # 34. pkt # 35. pkt # 36. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 00 17 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+a5 99 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 37. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 25 1e a1 f9 fc f8 00 00 00 00 60 02 04 00 | ..%.........`...
+80 92 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 38. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 20 63 a1 f9 fc f8 00 00 00 00 60 02 04 00 | .. c........`...
+85 4d 00 00 02 04 05 b4 00 00                   | .M........
+pkt # 39. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c dd a1 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+c8 0e 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 40. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 17 49 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ...I........`...
+8e 67 00 00 02 04 05 b4 00 00                   | .g........
+pkt # 41. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0d 20 bf a1 f8 fc f9 00 00 00 00 60 02 04 00 | .. .........`...
+84 f0 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 42. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 09 da a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+9b d6 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 43. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 0c c4 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+98 ec 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 44. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 82 4a a1 f9 fc f8 00 00 00 00 60 02 04 00 | ...J........`...
+23 66 00 00 02 04 05 b4 00 00                   | #f........
+pkt # 45. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0d 0b 97 a1 f8 fc f9 00 00 00 00 60 02 04 00 | ............`...
+9a 18 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 46. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0d 06 7a a1 f8 fc f9 00 00 00 00 60 02 04 00 | ...z........`...
+9f 35 00 00 02 04 05 b4 00 00                   | .5........
+pkt # 47. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 04 97 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+a1 19 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 48. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 04 14 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+a1 9c 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 49. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 22 60 a1 f9 fc f8 00 00 00 00 60 02 04 00 | .."`........`...
+83 50 00 00 02 04 05 b4 00 00                   | .P........
+pkt # 50. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c fc a8 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+a9 07 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 51. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 4b 96 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ..K.........`...
+5a 1a 00 00 02 04 05 b4 00 00                   | Z.........
+pkt # 52. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 07 9b a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+9e 15 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 53. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c c0 18 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+e5 97 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 54. 
+src mac addr: 6c:62:6d:8d:dd:32 | dst mac addr: 58:55:ca:f6:44:e5
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+cc 0c 1f f4 a1 f9 fc f8 00 00 00 00 60 02 04 00 | ............`...
+85 bc 00 00 02 04 05 b4 00 00                   | ..........
+pkt # 55. pkt # 56. pkt # 57. pkt # 58. pkt # 59. pkt # 60. pkt # 61. pkt # 62. pkt # 63. pkt # 64. pkt # 65. pkt # 66. pkt # 67. pkt # 68. pkt # 69. pkt # 70. pkt # 71. pkt # 72. pkt # 73. pkt # 74. pkt # 75. 
+src mac addr: 58:55:ca:f6:44:e5 | dst mac addr: 00:22:3f:8e:9a:88
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+95 29 00 50 eb f1 ec 8b 00 00 00 00 a0 02 39 08 | .).P..........9.
+6f b7 00 00 02 04 05 b4 04 02 08 0a 00 17 5f 5b | o............._[
+00 00 00 00 01 03 03 06                         | ........
+pkt # 76. pkt # 77. pkt # 78. pkt # 79. pkt # 80. pkt # 81. pkt # 82. pkt # 83. pkt # 84. pkt # 85. pkt # 86. pkt # 87. pkt # 88. pkt # 89. pkt # 90. pkt # 91. pkt # 92. pkt # 93. pkt # 94. pkt # 95. 
+src mac addr: 58:55:ca:f6:44:e5 | dst mac addr: 00:22:3f:8e:9a:88
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+81 d3 00 50 2a 1c 3e da 00 00 00 00 a0 02 39 08 | ...P*.>.......9.
+90 a6 00 00 02 04 05 b4 04 02 08 0a 00 17 60 48 | ..............`H
+00 00 00 00 01 03 03 06                         | ........
+pkt # 96. pkt # 97. pkt # 98. pkt # 99. pkt # 100. pkt # 101. pkt # 102. pkt # 103. pkt # 104. pkt # 105. pkt # 106. pkt # 107. pkt # 108. pkt # 109. pkt # 110. pkt # 111. pkt # 112. pkt # 113. pkt # 114. pkt # 115. pkt # 116. pkt # 117. pkt # 118. pkt # 119. pkt # 120. pkt # 121. pkt # 122. pkt # 123. pkt # 124. pkt # 125. pkt # 126. pkt # 127. pkt # 128. pkt # 129. pkt # 130. pkt # 131. pkt # 132. pkt # 133. pkt # 134. pkt # 135. pkt # 136. pkt # 137. pkt # 138. pkt # 139. pkt # 140. pkt # 141. pkt # 142. pkt # 143. pkt # 144. pkt # 145. pkt # 146. pkt # 147. pkt # 148. pkt # 149. pkt # 150. pkt # 151. pkt # 152. pkt # 153. pkt # 154. pkt # 155. pkt # 156. pkt # 157. pkt # 158. pkt # 159. pkt # 160. pkt # 161. pkt # 162. pkt # 163. pkt # 164. pkt # 165. pkt # 166. pkt # 167. pkt # 168. pkt # 169. pkt # 170. pkt # 171. pkt # 172. pkt # 173. pkt # 174. pkt # 175. pkt # 176. pkt # 177. pkt # 178. pkt # 179. pkt # 180. pkt # 181. pkt # 182. pkt # 183. pkt # 184. 
+src mac addr: 58:55:ca:f6:44:e5 | dst mac addr: 00:22:3f:8e:9a:88
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+c9 58 00 50 6b 31 a6 a8 00 00 00 00 a0 02 39 08 | .X.Pk1........9.
+eb 01 00 00 02 04 05 b4 04 02 08 0a 00 17 93 09 | ................
+00 00 00 00 01 03 03 06                         | ........
+pkt # 185. pkt # 186. 
+src mac addr: 58:55:ca:f6:44:e5 | dst mac addr: 00:22:3f:8e:9a:88
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+c9 5b 00 50 1f c2 53 e4 00 00 00 00 a0 02 39 08 | .[.P..S.......9.
+eb 01 00 00 02 04 05 b4 04 02 08 0a 00 17 93 1c | ................
+00 00 00 00 01 03 03 06                         | ........
+pkt # 187. pkt # 188. pkt # 189. pkt # 190. pkt # 191. pkt # 192. pkt # 193. 
+src mac addr: 58:55:ca:f6:44:e5 | dst mac addr: 00:22:3f:8e:9a:88
+
+
+src ip addr: 1533118168  |  dst ip addr: 1533118168
+
+type: 0
+
+ID: 0	Length: 0 )
+d0 68 00 50 f9 ea 46 d7 00 00 00 00 a0 02 39 08 | .h.P..F.......9.
+4b 34 00 00 02 04 05 b4 04 02 08 0a 00 17 93 65 | K4.............e
+00 00 00 00 01 03 03 06                         | ........
+^C
+root@bt:~/stealth_scan_detector-master/src# 
+
+
+-------------------------------------------------------------------
+
+END
+
+
+
+
+BEGIN # -- DEIMOS SCANNER
+-------------------------------------------------------------------
+[16:17][nab@deimos:~/Documents/stealth_scan_detector-master/src]$ sudo ifconfig wlan0 promisc
+[sudo] password for nab: 
+[16:17][nab@deimos:~/Documents/stealth_scan_detector-master/src]$ ifconfig
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 16436
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 0  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+p37p1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500                                                                                                                                                                                  
+        inet6 fe80::6e62:6dff:fe8d:dd32  prefixlen 64  scopeid 0x20<link>                                                                                                                                                                    
+        ether 6c:62:6d:8d:dd:32  txqueuelen 1000  (Ethernet)                                                                                                                                                                                 
+        RX packets 302  bytes 104062 (101.6 KiB)                                                                                                                                                                                             
+        RX errors 0  dropped 0  overruns 0  frame 0                                                                                                                                                                                          
+        TX packets 323  bytes 43751 (42.7 KiB)                                                                                                                                                                                               
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0                                                                                                                                                                           
+        device interrupt 46  base 0xe000                                                                                                                                                                                                     
+                                                                                                                                                                                                                                             
+wlan0: flags=4419<UP,BROADCAST,RUNNING,PROMISC,MULTICAST>  mtu 1500                                                                                                                                                                          
+        inet 192.168.1.16  netmask 255.255.255.0  broadcast 192.168.1.255                                                                                                                                                                    
+        inet6 fe80::208:54ff:fe9c:b10a  prefixlen 64  scopeid 0x20<link>                                                                                                                                                                     
+        ether 00:08:54:9c:b1:0a  txqueuelen 1000  (Ethernet)                                                                                                                                                                                 
+        RX packets 13  bytes 2037 (1.9 KiB)                                                                                                                                                                                                  
+        RX errors 0  dropped 0  overruns 0  frame 0                                                                                                                                                                                          
+        TX packets 42  bytes 6959 (6.7 KiB)                                                                                                                                                                                                  
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0                                                                                                                                                                           
+                                                                                                                                                                                                                                             
+[16:17][nab@deimos:~/Documents/stealth_scan_detector-master/src]$ sudo nmap -sS 192.168.1.4
+                                                                                                                                                                                                                                             
+Starting Nmap 6.01 ( http://nmap.org ) at 2013-08-23 16:17 PDT                                                                                                                                                                               
+Nmap scan report for 192.168.1.4                                                                                                                                                                                                             
+Host is up (0.0082s latency).                                                                                                                                                                                                                
+All 1000 scanned ports on 192.168.1.4 are closed                                                                                                                                                                                             
+MAC Address: 58:55:CA:F6:44:E5 (Apple)                                                                                                                                                                                                       
+
+Nmap done: 1 IP address (1 host up) scanned in 3.42 seconds
+[16:17][nab@deimos:~/Documents/stealth_scan_detector-master/src]
+
+
+-----------------------------------------------------------------
+
+
+# ---- BT5 SCANEE
+
+-----------------------------------------------------------------
+
+
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 1d 48 46 80 5f 18 00 00 00 00 60 02 04 00 | .%.HF._.....`...
+56 bb 00 00 02 04 05 b4                         | V.......
+
+caught packet 4
+pkt # 20. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 21 c9 46 80 5f 18 00 00 00 00 60 02 04 00 | .%!.F._.....`...
+52 3a 00 00 02 04 05 b4                         | R:......
+
+caught packet 4
+pkt # 21. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 09 4d 46 80 5f 18 00 00 00 00 60 02 04 00 | .%.MF._.....`...
+6a b6 00 00 02 04 05 b4                         | j.......
+
+caught packet 4
+pkt # 22. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 07 da 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+6c 29 00 00 02 04 05 b4                         | l)......
+
+caught packet 4
+pkt # 23. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 0d da 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+66 29 00 00 02 04 05 b4                         | f)......
+
+caught packet 4
+pkt # 24. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 dd a2 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+96 60 00 00 02 04 05 b4                         | .`......
+
+caught packet 4
+pkt # 25. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 00 13 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+73 f0 00 00 02 04 05 b4                         | s.......
+
+caught packet 4
+pkt # 26. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 21 ce 46 80 5f 18 00 00 00 00 60 02 04 00 | .%!.F._.....`...
+52 35 00 00 02 04 05 b4                         | R5......
+
+caught packet 4
+pkt # 27. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 0b b8 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+68 4b 00 00 02 04 05 b4                         | hK......
+
+caught packet 4
+pkt # 28. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 09 5f 46 80 5f 18 00 00 00 00 60 02 04 00 | .%._F._.....`...
+6a a4 00 00 02 04 05 b4                         | j.......
+
+caught packet 4
+pkt # 29. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 c0 06 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+b3 fc 00 00 02 04 05 b4                         | ........
+
+caught packet 4
+pkt # 30. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 3a 9c 46 80 5f 18 00 00 00 00 60 02 04 00 | .%:.F._.....`...
+39 67 00 00 02 04 05 b4                         | 9g......
+
+caught packet 4
+pkt # 31. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 07 d0 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+6c 33 00 00 02 04 05 b4                         | l3......
+
+caught packet 4
+pkt # 32. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 26 04 2b 46 81 5f 19 00 00 00 00 60 02 04 00 | .&.+F._.....`...
+6f d5 00 00 02 04 05 b4                         | o.......
+
+caught packet 4
+pkt # 33. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 17 16 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+5c ed 00 00 02 04 05 b4                         | \.......
+
+caught packet 4
+pkt # 34. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 04 1f 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+6f e4 00 00 02 04 05 b4                         | o.......
+
+caught packet 4
+pkt # 35. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 80 05 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+f3 fd 00 00 02 04 05 b4                         | ........
+
+caught packet 4
+pkt # 36. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 04 28 46 80 5f 18 00 00 00 00 60 02 04 00 | .%.(F._.....`...
+6f db 00 00 02 04 05 b4                         | o.......
+
+caught packet 4
+pkt # 37. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 0b 97 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+68 6c 00 00 02 04 05 b4                         | hl......
+
+caught packet 4
+pkt # 38. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 c3 4f 46 80 5f 18 00 00 00 00 60 02 04 00 | .%.OF._.....`...
+b0 b3 00 00 02 04 05 b4                         | ........
+
+caught packet 4
+pkt # 39. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 f7 63 46 80 5f 18 00 00 00 00 60 02 04 00 | .%.cF._.....`...
+7c 9f 00 00 02 04 05 b4                         | |.......
+
+caught packet 4
+pkt # 40. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 4a 9d 46 80 5f 18 00 00 00 00 60 02 04 00 | .%J.F._.....`...
+29 66 00 00 02 04 05 b4                         | )f......
+
+caught packet 4
+pkt # 41. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 04 43 46 80 5f 18 00 00 00 00 60 02 04 00 | .%.CF._.....`...
+6f c0 00 00 02 04 05 b4                         | o.......
+
+caught packet 4
+pkt # 42. 
+src mac addr: 00:08:54:9c:b1:0a | dst mac addr: 58:55:ca:f6:44:e5
+
+
+caught packet 1
+
+caught packet 2
+
+caught packet 2-2
+
+src ip addr: 0.0.0.0  |  dst ip addr: 0.0.0.0
+
+caught packet 3
+
+type: 0
+
+ID: 0	Length: 0 )
+f7 25 0c c5 46 80 5f 18 00 00 00 00 60 02 04 00 | .%..F._.....`...
+67 3e 00 00 02 04 05 b4                         | g>......
+
+caught packet 4
+^C
+root@bt:~/stealth_scan_detector-master/src#
+
+
+---------------------------------------------------------
+
+
+END

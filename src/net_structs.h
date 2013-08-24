@@ -6,12 +6,15 @@
 /* note: this code was heavily influenced by Jon Erikson's
    'Hacking: The Art of Exploitation' */
 
+#include <netinet/in.h>
+
 /* Ethernet Header */
 
 // ------ constants
 
 #define ETH_ADDR_LEN 6
 #define ETH_HDR_LEN 14
+#define IP_HDR_LEN 20
 
 // ------ definitions
 
@@ -36,7 +39,8 @@ struct ip_hdr {
 	unsigned char ip_ttl;          // time to live
 	unsigned char ip_type;         // protocol type
 	unsigned short ip_checksum;    // checksum
-	struct in_addr ip_src_addr, ip_dest_addr; // source & destination IP addresses
+	struct in_addr ip_src_addr;
+	struct in_addr ip_dest_addr; // source & destination IP addresses
 
 };
 
@@ -64,6 +68,7 @@ struct tcp_hdr {
 	unsigned short tcp_urgent; // TCP urgent pointer
 
 };
+
 
 
 
