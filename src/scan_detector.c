@@ -4,7 +4,9 @@
  * */
 
 #include <stdio.h>
+#include <netinet/in.h>
 #include <pcap/pcap.h>
+#include <arpa/inet.h>
 
 #include "malloc_dump.h"
 #include "net_structs.h"
@@ -66,6 +68,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + ETH_HDR_LEN + sizeof(struct ip_hdr);
 	int tcp_header_length, total_header_size, pkt_data_len, i;
 	int header_size = 4 * tcp_header->tcp_offset;
+	char *src_addr, *dest_addr;
 	u_char *pkt_data;
 
 	if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
@@ -85,11 +88,19 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 
 		puts("\n");
 
-		printf("\nsrc ip addr: %d  |  dst ip addr: %d\n", inet_ntoa(ip_header->ip_src_addr), inet_ntoa(ip_header->ip_dest_addr));
+		printf("\ncaught packet 1\n");
+		src_addr = inet_ntoa(ip_header->ip_src_addr);
+		printf("\ncaught packet 2\n");
+		dest_addr = inet_ntoa(ip_header->ip_dest_addr);
+		printf("\ncaught packet 2-2\n");
+
+		printf("\nsrc ip addr: %s  |  dst ip addr: %s\n", src_addr, dest_addr);
+		printf("\ncaught packet 3\n");
 		printf("\ntype: %u\n", (u_int) ip_header->ip_type);
 		printf("\nID: %hu\tLength: %hu )\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
 
 		dump(pkt_data, pkt_data_len);
+		printf("\ncaught packet 4\n");
 
 	}
 
@@ -148,5 +159,4 @@ while true {
 }
 
 */
-
 
