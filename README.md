@@ -1,2 +1,14 @@
-stealth_scan_detector
+stealth scan detection deamon
 =====================
+
+ssdd start
+
+ssdd print
+
+ssdd stop
+
+ssdd clear
+
+
+
+
