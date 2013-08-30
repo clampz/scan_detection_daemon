@@ -9,8 +9,8 @@
 #include <arpa/inet.h>
 
 #include "malloc_dump.h"
-//#include "net_structs.h"
-#include "hacking-network.h"
+#include "net_structs.h"
+//#include "hacking-network.h"
 
 
 void scan_fatal(const char *, const char *);
@@ -71,21 +71,35 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	printf("\nether_hdr: %lu", sizeof(const struct ether_hdr));
 	printf(", ip_hdr: %lu\n\n", sizeof(const struct ip_hdr));
 
-	const struct ether_hdr *eth_header = (const struct ether_hdr *) packet;
-//	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + ETH_HDR_LEN;
-	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + sizeof(struct ether_hdr);
-//	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + ETH_HDR_LEN + IP_HDR_LEN;
-	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + sizeof(struct ether_hdr) + sizeof(struct ip_hdr);
+	const struct eth_hdr *eth_header = (const struct eth_hdr *) packet;
+	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + ETH_HDR_LEN;
+//	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + sizeof(struct ether_hdr);
+	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + ETH_HDR_LEN + IP_HDR_LEN;
+//	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + sizeof(struct ether_hdr) + sizeof(struct ip_hdr);
 	int tcp_header_length, total_header_size, pkt_data_len, i;
 	int header_size = 4 * tcp_header->tcp_offset;
 	char *src_addr, *dest_addr;
 	u_char *pkt_data;
 
+/* FROM /usr/include/netinet/in.h
+
+// Internet address.
+typedef uint32_t in_addr_t;
+struct in_addr
+  {
+    in_addr_t s_addr;
+  };
+
+
+
+
+*/
+
 	if (isSYNPkt(packet+ETHER_HDR_LEN+sizeof(struct ip_hdr))) {
 
         	tcp_header_length = 4 * tcp_header->tcp_offset;
-//	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
-	        total_header_size = sizeof(struct ether_hdr) + sizeof(struct ip_hdr) + tcp_header_length;
+	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
+//	        total_header_size = sizeof(struct eth_hdr) + sizeof(struct ip_hdr) + tcp_header_length;
 
 		pkt_data = (u_char *)packet + total_header_size;
 		pkt_data_len = cap_header->len - total_header_size;
