@@ -6,6 +6,7 @@
 /* note: this code was heavily influenced by Jon Erikson's
    'Hacking: The Art of Exploitation' */
 
+#include <sys/types.h>
 #include <netinet/in.h>
 
 /* Ethernet Header */
@@ -28,7 +29,6 @@ struct eth_hdr {
 };
 
 /* Internet Protocol Header */
-
 struct ip_hdr {
 
 	unsigned char ip_version_and_header_length; // version and header length combined
@@ -39,11 +39,42 @@ struct ip_hdr {
 	unsigned char ip_ttl;          // time to live
 	unsigned char ip_type;         // protocol type
 	unsigned short ip_checksum;    // checksum
+	//long unsigned int ip_src_addr;
+	//long unsigned int ip_dest_addr;
 	struct in_addr ip_src_addr;
 	struct in_addr ip_dest_addr; // source & destination IP addresses
 
 };
 
+
+/*
+ * Internet Protocol Header
+ */
+/*
+struct ip_hdr {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    unsigned int ip_hl:4;               // header length /
+    unsigned int ip_v:4;                // version /
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+    unsigned int ip_v:4;                // version /
+    unsigned int ip_hl:4;               // header length /
+#endif
+    u_int8_t ip_tos;                    // type of service /
+    u_short ip_len;                     // total length /
+    u_short ip_id;                      // identification /
+    u_short ip_frag_off;                // fragment offset field /
+#define IP_RF 0x8000                    // reserved fragment flag /
+#define IP_DF 0x4000                    // dont fragment flag /
+#define IP_MF 0x2000                    // more fragments flag /
+#define IP_OFFMASK 0x1fff               // mask for fragmenting bits /
+    u_int8_t ip_ttl;                    // time to live /
+    u_int8_t ip_type;                   // protocol /
+    u_short ip_checksum;                // checksum /
+    struct in_addr ip_src_addr;         // source address/
+    struct in_addr ip_dest_addr;        // dest address 
+  };
+*/
 /* Transmission Control Protocol Header */
 
 struct tcp_hdr {

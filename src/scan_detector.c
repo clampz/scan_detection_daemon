@@ -4,7 +4,7 @@
  * */
 
 #include <stdio.h>
-//#include <netinet/in.h>
+#include <netinet/in.h>
 #include <pcap/pcap.h>
 #include <arpa/inet.h>
 
@@ -66,9 +66,9 @@ void main(int argc, char ** argv) {
 // checks for SYN flag and writes info if it finds one
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
-	printf("\nether_hdr: %lu", sizeof(struct ether_hdr));
+	printf("\nether_hdr: %lu", sizeof(struct eth_hdr));
 	printf(", ip_hdr: %lu\n\n", sizeof(struct ip_hdr));
-	printf("\nether_hdr: %lu", sizeof(const struct ether_hdr));
+	printf("\nether_hdr: %lu", sizeof(const struct eth_hdr));
 	printf(", ip_hdr: %lu\n\n", sizeof(const struct ip_hdr));
 
 	const struct eth_hdr *eth_header = (const struct eth_hdr *) packet;
@@ -94,8 +94,15 @@ struct in_addr
 
 
 */
+//		printf("\ncaught_packet ln:100 src ip addr int: %lu. dest ip addr int: %lu.\n\n", 
+//			(long unsigned int) ip_header->ip_src_addr.s_addr, 
+//			(long unsigned int) ip_header->ip_dest_addr.s_addr);
 
-	if (isSYNPkt(packet+ETHER_HDR_LEN+sizeof(struct ip_hdr))) {
+	if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
+
+//		printf("\ncaught_packet ln:100 src ip addr int: %lu. dest ip addr int: %lu.\n\n", 
+//			(long unsigned int) ip_header->ip_src_addr.s_addr, 
+//			(long unsigned int) ip_header->ip_dest_addr.s_addr);
 
         	tcp_header_length = 4 * tcp_header->tcp_offset;
 	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
@@ -104,26 +111,26 @@ struct in_addr
 		pkt_data = (u_char *)packet + total_header_size;
 		pkt_data_len = cap_header->len - total_header_size;
 
-		//printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
-		//for (i = 1; i < ETHER_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
+		printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
+		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
 
-		//printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
-		//for (i = 1; i < ETHER_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
+		printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
+		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
 
-        	printf("\nsrc mac addr: %02x", eth_header->ether_src_addr[0]);
-        	for(i=1; i < ETHER_ADDR_LEN; i++)
-                	printf(":%02x", eth_header->ether_src_addr[i]);
+//        	printf("\nsrc mac addr: %02x", eth_header->ether_src_addr[0]);
+//        	for(i=1; i < ETHER_ADDR_LEN; i++)
+//                	printf(":%02x", eth_header->ether_src_addr[i]);
 
-        	printf(" | dst mac addr: %02x", eth_header->ether_dest_addr[0]);
-        	for(i=1; i < ETHER_ADDR_LEN; i++)
-                	printf(":%02x", eth_header->ether_dest_addr[i]);
+//        	printf(" | dst mac addr: %02x", eth_header->ether_dest_addr[0]);
+//        	for(i=1; i < ETHER_ADDR_LEN; i++)
+//                	printf(":%02x", eth_header->ether_dest_addr[i]);
 
 		puts("\n");
 
 		//src_addr = inet_ntoa(ip_header->ip_src_addr);
 		//dest_addr = inet_ntoa(ip_header->ip_dest_addr);
 
-		printf("\nsrc ip addr: %s  |  dst ip addr: %s\n", inet_ntoa((struct in_addr) ip_header->ip_src_addr), inet_ntoa((struct in_addr) ip_header->ip_dest_addr));
+		printf("\nsrc ip addr: %s  |  dst ip addr: %s\n", inet_ntoa(ip_header->ip_src_addr), inet_ntoa(ip_header->ip_dest_addr));
 		printf("\ntype: %u\n", (u_int) ip_header->ip_type);
 		printf("\nID: %hu\tLength: %hu )\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
 
