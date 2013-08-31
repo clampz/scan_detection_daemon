@@ -36,6 +36,10 @@ struct ip_hdr {
 	unsigned short ip_len;         // total length
 	unsigned short ip_id;          // identification number
 	unsigned short ip_frag_offset; // fragment offset and flags
+#define IP_RF 0x8000                    // reserved fragment flag /
+#define IP_DF 0x4000                    // dont fragment flag /
+#define IP_MF 0x2000                    // more fragments flag /
+#define IP_OFFMASK 0x1fff 
 	unsigned char ip_ttl;          // time to live
 	unsigned char ip_type;         // protocol type
 	unsigned short ip_checksum;    // checksum

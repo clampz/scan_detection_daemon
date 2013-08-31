@@ -4,14 +4,11 @@
  * */
 
 #include <stdio.h>
-#include <netinet/in.h>
 #include <pcap/pcap.h>
 #include <arpa/inet.h>
 
 #include "malloc_dump.h"
 #include "net_structs.h"
-//#include "hacking-network.h"
-
 
 void scan_fatal(const char *, const char *);
 void main(int, char **);
@@ -26,7 +23,6 @@ void scan_fatal(const char *failed_in, const char *errbuf) {
         exit(1);
 
 }
-
 
 // main creates a listener and captures packets while looking 
 // for SYN flags in the TCP header
@@ -66,79 +62,57 @@ void main(int argc, char ** argv) {
 // checks for SYN flag and writes info if it finds one
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
-	printf("\nether_hdr: %lu", sizeof(struct eth_hdr));
-	printf(", ip_hdr: %lu\n\n", sizeof(struct ip_hdr));
-	printf("\nether_hdr: %lu", sizeof(const struct eth_hdr));
-	printf(", ip_hdr: %lu\n\n", sizeof(const struct ip_hdr));
 
-	const struct eth_hdr *eth_header = (const struct eth_hdr *) packet;
-	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + ETH_HDR_LEN;
-//	const struct ip_hdr *ip_header = (const struct ip_hdr *) packet + sizeof(struct ether_hdr);
-	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + ETH_HDR_LEN + IP_HDR_LEN;
-//	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *) packet + sizeof(struct ether_hdr) + sizeof(struct ip_hdr);
+	const struct eth_hdr *eth_header;
+	const struct ip_hdr *ip_header;
+	const struct tcp_hdr *tcp_header;
+	eth_header = (const struct eth_hdr *) packet;
+	ip_header = (const struct ip_hdr *) (packet + ETH_HDR_LEN);
+	tcp_header = (const struct tcp_hdr *) (packet + ETH_HDR_LEN + IP_HDR_LEN);
 	int tcp_header_length, total_header_size, pkt_data_len, i;
 	int header_size = 4 * tcp_header->tcp_offset;
 	char *src_addr, *dest_addr;
 	u_char *pkt_data;
 
-/* FROM /usr/include/netinet/in.h
+// if neither ip is a loopback addr
+	if (!(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
 
-// Internet address.
-typedef uint32_t in_addr_t;
-struct in_addr
-  {
-    in_addr_t s_addr;
-  };
-
-
-
-
-*/
-//		printf("\ncaught_packet ln:100 src ip addr int: %lu. dest ip addr int: %lu.\n\n", 
-//			(long unsigned int) ip_header->ip_src_addr.s_addr, 
-//			(long unsigned int) ip_header->ip_dest_addr.s_addr);
-
-	if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
-
-//		printf("\ncaught_packet ln:100 src ip addr int: %lu. dest ip addr int: %lu.\n\n", 
-//			(long unsigned int) ip_header->ip_src_addr.s_addr, 
-//			(long unsigned int) ip_header->ip_dest_addr.s_addr);
+// if the packet has only a SYN flag up
+		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
         	tcp_header_length = 4 * tcp_header->tcp_offset;
 	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
-//	        total_header_size = sizeof(struct eth_hdr) + sizeof(struct ip_hdr) + tcp_header_length;
 
-		pkt_data = (u_char *)packet + total_header_size;
-		pkt_data_len = cap_header->len - total_header_size;
+			pkt_data = (u_char *)packet + total_header_size;
+			pkt_data_len = cap_header->len - total_header_size;
 
-		printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
-		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
+			printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
+			for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
 
-		printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
-		for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
+			printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
+			for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
 
-//        	printf("\nsrc mac addr: %02x", eth_header->ether_src_addr[0]);
-//        	for(i=1; i < ETHER_ADDR_LEN; i++)
-//                	printf(":%02x", eth_header->ether_src_addr[i]);
 
-//        	printf(" | dst mac addr: %02x", eth_header->ether_dest_addr[0]);
-//        	for(i=1; i < ETHER_ADDR_LEN; i++)
-//                	printf(":%02x", eth_header->ether_dest_addr[i]);
+			puts("\n");
 
-		puts("\n");
+			src_addr = inet_ntoa(ip_header->ip_src_addr);
+			printf("\nsrc ip addr: %s ", src_addr);
+			dest_addr = inet_ntoa(ip_header->ip_dest_addr);
+			printf("| dst ip addr: %s\n", dest_addr);
 
-		//src_addr = inet_ntoa(ip_header->ip_src_addr);
-		//dest_addr = inet_ntoa(ip_header->ip_dest_addr);
+			printf("\ntype: %u\n", (u_int) ip_header->ip_type);
 
-		printf("\nsrc ip addr: %s  |  dst ip addr: %s\n", inet_ntoa(ip_header->ip_src_addr), inet_ntoa(ip_header->ip_dest_addr));
-		printf("\ntype: %u\n", (u_int) ip_header->ip_type);
-		printf("\nID: %hu\tLength: %hu )\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
+			printf("\nID: %hu\tLength: %hu )\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
 
-		dump(pkt_data, pkt_data_len);
+			dump(pkt_data, pkt_data_len);
 
-	}
+		} // SYN if
 
-}
+	} else { // ip loopback if
+	
+	} // else if not loopback
+
+} // caught_packet
 
 // takes TCP header and checks for SYN flags, returns 1 if true
 int isSYNPkt(const u_char *header_start) {
@@ -159,43 +133,3 @@ int isSYNPkt(const u_char *header_start) {
 	return tcp_header->tcp_flags & TCP_SYN;
 
 }
-
-/*
-void decode_eth(char *printString, const u_char *packet) {
-
-	int i;
-	const struct eth_hdr *ethernet_header;
-
-	ethernet_header = (const struct eth_hdr *) header_start;
-	snprintf(printString, MAX_PRINT_LEN, "[[  Layer 2 :: Ethernet Header  ]]\n[ Source: %02x", ethernet_header->ether_src_addr[0]);
-
-}*/
-
-/* PSEUDO CODE
-
-pkArr = define const size array for packets
-
-while true {
-
-	for (i = 0; i < 10; i++) {
-
-		recieve a tcp packet
-		append it to pkArr
-		if packet has only SYN up {
-			recieve a packet
-			if packet has SYN and RST up {
-				print detection and dump packets
-			}
-		}
-
-	}
-
-}
-
-
----------
-
-printf("\n1\n\n");
-*/
-
-
