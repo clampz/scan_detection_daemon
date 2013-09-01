@@ -10,10 +10,16 @@
 #include "malloc_dump.h"
 #include "net_structs.h"
 
+#define SCAN_ALERT_PRINT_1 "\n-------------------\n\n       NETWORK SCAN ALERT (TYPE: "
+#define SCAN_ALERT_PRINT_2 ")\n\n-------------------\n"
+
 void scan_fatal(const char *, const char *);
 void main(int, char **);
 void caught_packet(u_char*, const struct pcap_pkthdr*, const u_char*);
 int isSYNPkt(const u_char*);
+int isFINPkt(const u_char*);
+int isXMASPkt(const u_char*);
+void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*);
 
 // an error function
 void scan_fatal(const char *failed_in, const char *errbuf) {
@@ -59,6 +65,28 @@ void main(int argc, char ** argv) {
 
 }
 
+void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_header, 
+		const struct ip_hdr *ip_header, const char *type) {
+
+	char *src_addr, *dest_addr;
+	int i;
+
+//puts("\n2\n");
+	printf("%s%s%s", SCAN_ALERT_PRINT_1, type, SCAN_ALERT_PRINT_2);
+
+	printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
+	for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
+
+	puts("\n");
+
+	src_addr = inet_ntoa(ip_header->ip_src_addr);
+	printf("src ip addr: %s \n\n", src_addr);
+
+        dest_addr = inet_ntoa(ip_header->ip_dest_addr);
+        printf("| dst ip addr: %s\n", dest_addr);
+
+}
+
 // checks for SYN flag and writes info if it finds one
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
@@ -69,50 +97,85 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	eth_header = (const struct eth_hdr *) packet;
 	ip_header = (const struct ip_hdr *) (packet + ETH_HDR_LEN);
 	tcp_header = (const struct tcp_hdr *) (packet + ETH_HDR_LEN + IP_HDR_LEN);
-	int tcp_header_length, total_header_size, pkt_data_len, i;
-	int header_size = 4 * tcp_header->tcp_offset;
-	char *src_addr, *dest_addr;
-	u_char *pkt_data;
+//	int tcp_header_length, total_header_size, pkt_data_len, i;
+//	int header_size = 4 * tcp_header->tcp_offset;
 
 // if neither ip is a loopback addr
 	if (!(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
 
+//puts("\n1\n");
+
 // if the packet has only a SYN flag up
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
-        	tcp_header_length = 4 * tcp_header->tcp_offset;
-	        total_header_size = ETH_HDR_LEN+sizeof(struct ip_hdr)+tcp_header_length;
+	//		alert_user((const struct eth_hdr *) packet, (const struct tcp_hdr *)\
+	//			    packet + ETH_HDR_LEN, (const struct ip_hdr *) \
+	//			    packet + ETH_HDR_LEN + IP_HDR_LEN, "STEALTH SYN SCAN");
 
-			pkt_data = (u_char *)packet + total_header_size;
-			pkt_data_len = cap_header->len - total_header_size;
-
-			printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
-			for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
-
-			printf(" | dst mac addr: %02x", eth_header->dest_eth_addr[0]);
-			for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->dest_eth_addr[i]);
-
-
-			puts("\n");
-
-			src_addr = inet_ntoa(ip_header->ip_src_addr);
-			printf("\nsrc ip addr: %s ", src_addr);
-			dest_addr = inet_ntoa(ip_header->ip_dest_addr);
-			printf("| dst ip addr: %s\n", dest_addr);
-
-			printf("\ntype: %u\n", (u_int) ip_header->ip_type);
-
-			printf("\nID: %hu\tLength: %hu )\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
-
-			dump(pkt_data, pkt_data_len);
+			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN");
 
 		} // SYN if
+		else if (((int) ip_header->ip_type) == 17 && ((int) eth_header->ether_type) == 8) {
+
+			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN");
+
+		} // UDP if
+		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
+
+			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN");
+
+		} // FIN if
+		else if (isXMASPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
+
+			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN");
+
+		} // XMAS if
+		else if (((int) ip_header->ip_type) == 6 && ((int) eth_header->ether_type) == 8) {
+
+			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN");
+
+		} // NULL if
 
 	} else { // ip loopback if
 	
 	} // else if not loopback
 
 } // caught_packet
+
+// takes TCP header and checks for FIN flags, returns 1 if true
+int isFINPkt(const u_char *header_start) {
+
+	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)header_start;
+
+	if (tcp_header->tcp_flags & TCP_SYN) return 0;
+
+	if (tcp_header->tcp_flags & TCP_URG) return 0; 
+	
+	if (tcp_header->tcp_flags & TCP_RST) return 0;
+
+	if (tcp_header->tcp_flags & TCP_PUSH) return 0;
+
+	if (tcp_header->tcp_flags & TCP_ACK) return 0;
+
+	return tcp_header->tcp_flags & TCP_FIN;
+	
+
+} // isFINPkt
+
+// takes TCP header and checks for FIN, PSH, and URG flags,  returns 1 if true
+int isXMASPkt(const u_char *header_start) {
+
+	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)header_start;
+
+	if (tcp_header->tcp_flags & TCP_SYN) return 0;
+	
+	if (tcp_header->tcp_flags & TCP_RST) return 0;
+
+	if (tcp_header->tcp_flags & TCP_ACK) return 0;
+
+	return tcp_header->tcp_flags & TCP_FIN && tcp_header->tcp_flags & TCP_PUSH && tcp_header->tcp_flags & TCP_URG;
+
+} // isXMASPkt
 
 // takes TCP header and checks for SYN flags, returns 1 if true
 int isSYNPkt(const u_char *header_start) {
@@ -132,4 +195,5 @@ int isSYNPkt(const u_char *header_start) {
 
 	return tcp_header->tcp_flags & TCP_SYN;
 
-}
+} // isSYNPkt
+
