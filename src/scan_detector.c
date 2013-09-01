@@ -115,11 +115,6 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN");
 
 		} // SYN if
-		else if (((int) ip_header->ip_type) == 17 && ((int) eth_header->ether_type) == 8) {
-
-			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN");
-
-		} // UDP if
 		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN");
@@ -135,6 +130,11 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN");
 
 		} // NULL if
+		else if (((int) ip_header->ip_type) == 17 && ((int) eth_header->ether_type) == 8) {
+
+			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN");
+
+		} // UDP if
 
 	} else { // ip loopback if
 	
