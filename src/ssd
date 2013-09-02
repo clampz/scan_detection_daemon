@@ -1,0 +1,17 @@
+!#/bin/bash
+
+# ssd by David Weinman <david@weinman.com>
+
+DEV=$(./prntDev)
+
+IP_ADDR=$(ifconfig | grep -A 3 $DEV | grep "inet ")
+
+IP_ADDR="${IP_ADDR/inet/}"
+
+IP_ADDR=${IP_ADDR%%netmask*}
+
+IP_ADDR=${IP_ADDR/ /}
+
+./scan_detector $IP_ADDR
+
+
