@@ -2,16 +2,29 @@
 
 # ssd by David Weinman <david@weinman.com>
 
-DEV=$(./prntDev)
+#DEV=$(./pdefdev)
 
-IP_ADDR=$(ifconfig | grep -A 3 $DEV | grep "inet ")
+# DARWIN CODE BELOW
+# IP_ADDR=$(ifconfig | grep -A 3 $DEV | grep "inet ")
 
-IP_ADDR="${IP_ADDR/inet/}"
+# BT 5
+IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet")
 
-IP_ADDR=${IP_ADDR%%netmask*}
+# DARWIN CODE BELOW
+#IP_ADDR="${IP_ADDR/inet/}"
 
+# BT 5
+IP_ADDR="${IP_ADDR/inet addr:/}"
+
+# DARWIN CODE BELOW
+#IP_ADDR=${IP_ADDR%%netmask*}
+
+# BT 5
+IP_ADDR=${IP_ADDR%%Bcast*}
+
+#
 IP_ADDR=${IP_ADDR/ /}
 
-./scan_detector $IP_ADDR
+./scan_detector $IP_ADDR 100
 
 

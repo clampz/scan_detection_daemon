@@ -52,3 +52,14 @@ void dump(const unsigned char *data_buffer, const unsigned int length) {
 	} // end for
 }
 
+// returns 0 if the strings that str1 and str2 point to are not the same.
+int equals(char * str1, char * str2) {
+
+	while (*str1 == *str2) {
+		str1++;
+		str2++;
+		if ((*str1 == '\0') && (*str2 == '\0')) return 1;
+	}
+	return 0;
+
+}

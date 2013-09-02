@@ -5,12 +5,13 @@
 
 // prints the id for the current default network adapter
 
+#include <stdio.h>
 #include <pcap/pcap.h>
 #include "malloc_dump.h"
 
-int main(int, char **);
+void main(int, char **);
 
-int main(int argc, char **argv) {
+void main(int argc, char **argv) {
 
 	char errbuf[PCAP_ERRBUF_SIZE];
         char *device;
@@ -28,7 +29,7 @@ int main(int argc, char **argv) {
 // print the id
 	printf("%s\n", device);
 
-	return 1;
+	return;
 
 }
 

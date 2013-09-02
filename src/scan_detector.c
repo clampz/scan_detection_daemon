@@ -21,6 +21,8 @@ int isFINPkt(const u_char*);
 int isXMASPkt(const u_char*);
 void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*);
 
+char *host_ip;
+
 // an error function
 void scan_fatal(const char *failed_in, const char *errbuf) {
 
@@ -40,8 +42,9 @@ void main(int argc, char ** argv) {
         char errbuf[PCAP_ERRBUF_SIZE];
         char *device;
 	pcap_t *pcap_handle;
+	host_ip = argv[1];
 
-	if (argc != 2) {printf("\nwrong # of args.\n\n"); exit(1);} 
+	if (argc != 3) {printf("\nwrong # of args.\n\n"); exit(1);} 
 
 	device = pcap_lookupdev(errbuf);
 
@@ -52,13 +55,13 @@ void main(int argc, char ** argv) {
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
 // just testing with diff while loop condition
-	while (i++ < atoi(argv[1])) {
+	while (i++ < atoi(argv[2])) {
 
 		if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 		printf("pkt # %d. ", i);
 		pcap_loop(pcap_handle, 1, caught_packet, NULL);
 		pcap_close(pcap_handle);
-	
+
 	}
 
 	return;
@@ -97,11 +100,15 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	eth_header = (const struct eth_hdr *) packet;
 	ip_header = (const struct ip_hdr *) (packet + ETH_HDR_LEN);
 	tcp_header = (const struct tcp_hdr *) (packet + ETH_HDR_LEN + IP_HDR_LEN);
-//	int tcp_header_length, total_header_size, pkt_data_len, i;
-//	int header_size = 4 * tcp_header->tcp_offset;
+	int tcp_header_length, total_header_size, pkt_data_len, i;
+	int tcp_header_size = 4 * tcp_header->tcp_offset;
 
-// if neither ip is a loopback addr
-	if (!(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
+	total_header_size = ETH_HDR_LEN+IP_HDR_LEN+tcp_header_size;
+	pkt_data_len = cap_header->len - total_header_size;
+
+// if neither ip is a loopback addr, and the dest ip in the packet is the host ip
+	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
+	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
 
 //puts("\n1\n");
 
