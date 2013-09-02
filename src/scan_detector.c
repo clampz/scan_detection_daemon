@@ -9,6 +9,7 @@
 
 #include "malloc_dump.h"
 #include "net_structs.h"
+#include "hash_t.h"
 
 #define SCAN_ALERT_PRINT_1 "\n-------------------\n\n       NETWORK SCAN ALERT (TYPE: "
 #define SCAN_ALERT_PRINT_2 ")\n\n-------------------\n"
