@@ -19,7 +19,7 @@ add elements, remove elements, search by key, get element
 struct element {
 
 	char *ip_addr, *type;
-	int size;
+	int *size;
 
 };
 
@@ -43,9 +43,9 @@ int indexOf(char *key) {
 
 	int i;
 
-	for (i = 0; i < table_size; i++) {
+	for (i = 0; i <= (table_size - 1); i++) {
 
-		if (equals(key, *table_ptr[i])) return i;
+		if (equals(key, table_ptr[i]->ip_addr)) return i;
 
 	}
 
@@ -57,7 +57,7 @@ struct element *getElement(char *target_name) {
 
 	if (indexOf(target_name) == -1) fatal("hash_t.h 53: index out of range");
 
-	return *table_ptr[indexOf(target_name)];
+	return table_ptr[indexOf(target_name)];
 
 }
 
@@ -66,21 +66,21 @@ void add_element(struct element *new_element) {
 	if (table_ptr == NULL) {
 
 		table_size = 1;
-		table_ptr = (struct element *) malloc(1);
-		*table_ptr[0] = new_element;
+		table_ptr = (struct element **) ec_malloc(1);
+		table_ptr[0] = new_element;
 		return;
 
 	}
 
 	// copy current table to extra table ptr, free table_ptr
-	extra_table_ptr = (struct element *)  ec_malloc(table_size);
-	memcpy(table_ptr, extra_table_ptr, table_size * sizeof(struct element *));
+	extra_table_ptr = (struct element **)  ec_malloc(table_size);
+	memcpy(extra_table_ptr, table_ptr, table_size * sizeof(struct element *));
 	free(table_ptr);
 
 	// copy extra table back to current, add new element, and free extra_table_ptr
-	table_ptr = (struct element *) ec_malloc(++table_size);
-	memcpy(extra_table_ptr, table_ptr, table_size * sizeof(struct element *));
-	*table_ptr[table_size - 1] = new_element;
+	table_ptr = (struct element **) ec_malloc(++table_size);
+	memcpy(table_ptr, extra_table_ptr, (table_size - 1) * sizeof(struct element *));
+	table_ptr[table_size - 1] = new_element;
 	free(extra_table_ptr);
 	return;
 
@@ -88,16 +88,18 @@ void add_element(struct element *new_element) {
 
 void remove_element(struct element *target) {
 
-	int i;
+	int i, j;
 	//if (table_ptr == NULL) { printf(); return;}
 
 	// copy current table to extra table ptr, free table_ptr
-	extra_table_ptr = (struct element *)  ec_malloc(table_size);
-	memcpy(table_ptr, extra_table_ptr, table_size * sizeof(struct element *));
+	*extra_table_ptr = (struct element *)  ec_malloc(table_size);
+	memcpy(extra_table_ptr, table_ptr, table_size * sizeof(struct element *));
 	free(table_ptr);
 
 	// copy extra table back to current, add new element, and free extra_table_ptr
-	table_ptr = (struct element *) ec_malloc(--table_size);
+	*table_ptr = (struct element *) ec_malloc(--table_size);
+
+	printf("table size is: %d\n\n", table_size);
 
 /*
 for every element in the new table
@@ -105,53 +107,47 @@ check if the name in the current element in the extra table ptr is the same as t
 if it is then ignore it
 else copy an element from extra table back
 */
-	for (i = 0; i < table_size; i++) {
+	j = 0;
 
-		if (equals(target->ip_addr, *extra_table_ptr[i]->ip_addr)) continue;
-		*table_ptr[i] = *extra_table_ptr[i];
+	printf("tableprint:\n");
+	for (i = 0; i < (table_size + 1); i++) {
+
+		printf("\nis extra_table[%d]->size null? %d.\n", i, extra_table_ptr[i]->size == NULL);
+		printf("\nextra_table[%d]'s ip = %s", i, extra_table_ptr[i]->ip_addr);
+		printf("\nextra_table[%d]'s size = %d", i, *extra_table_ptr[i]->size);
 
 	}
+	puts("\n....\n\n");
+
+	for (i = 0; i < (table_size + 1); i++) {
+
+		if (equals(target->ip_addr, extra_table_ptr[i]->ip_addr)) continue;
+
+		memcpy(table_ptr[j++], extra_table_ptr[i], sizeof(struct element *));
+
+	}
+
+	printf("tableprint:\n");
+	for (i = 0; i < table_size; i++) {
+
+		printf("\nis table[%d] null? %d.\n", i, table_ptr[i] == NULL);
+
+		printf("\ntable[%d]'s ip_addr = %s", i, table_ptr[i]->ip_addr);
+
+	}
+	puts("\n....\n\n");
+
+	printf("tableprint:\n");
+	for (i = 0; i < (table_size + 1); i++) {
+
+		printf("\nextra_table[%d]'s ip = %s", i, extra_table_ptr[i]->ip_addr);
+
+	}
+	puts("\n....\n\n");
 
 	free(extra_table_ptr);
 	return;
 
 
 }
-
-/* DEBUG:
-
-[05:12][Inspector_Detector@detection-squad:~/Desktop/stealth_scan_detector/src]$ cat hello.c
-// hello.c by Bill Weinman <http://bw.org/>
-#include <stdio.h>
-#include "hash_t.h"
-
-int main( int argc, char ** argv ) {
-	printf("Hello, World!\n");
-	return 0;
-}
-[05:13][Inspector_Detector@detection-squad:~/Desktop/stealth_scan_detector/src]$
-
-
-[05:12][Inspector_Detector@detection-squad:~/Desktop/stealth_scan_detector/src]$ gcc -o hello hello.c
-In file included from hello.c:3:
-hash_t.h: In function ‘indexOf’:
-hash_t.h:48: error: incompatible type for argument 2 of ‘equals’
-hash_t.h: In function ‘getElement’:
-hash_t.h:60: error: incompatible types in return
-hash_t.h: In function ‘add_element’:
-hash_t.h:69: warning: assignment from incompatible pointer type
-hash_t.h:70: error: incompatible types in assignment
-hash_t.h:76: warning: assignment from incompatible pointer type
-hash_t.h:81: warning: assignment from incompatible pointer type
-hash_t.h:83: error: incompatible types in assignment
-hash_t.h: In function ‘remove_element’:
-hash_t.h:95: warning: assignment from incompatible pointer type
-hash_t.h:100: warning: assignment from incompatible pointer type
-hash_t.h:110: warning: passing argument 2 of ‘equals’ makes pointer from integer without a cast
-[05:12][Inspector_Detector@detection-squad:~/Desktop/stealth_scan_detector/src]$
-
-
-
-
-*/
 
