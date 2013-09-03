@@ -88,7 +88,7 @@ void add_element(struct element *new_element) {
 
 void remove_element(struct element *target) {
 
-	int i, j;
+	int j, i;
 	//if (table_ptr == NULL) { printf(); return;}
 
 	// copy current table to extra table ptr, free table_ptr
@@ -107,47 +107,21 @@ check if the name in the current element in the extra table ptr is the same as t
 if it is then ignore it
 else copy an element from extra table back
 */
-	j = 0;
 
-	printf("tableprint:\n");
-	for (i = 0; i < (table_size + 1); i++) {
-
-		printf("\nis extra_table[%d]->size null? %d.\n", i, extra_table_ptr[i]->size == NULL);
-		printf("\nextra_table[%d]'s ip = %s", i, extra_table_ptr[i]->ip_addr);
-		printf("\nextra_table[%d]'s size = %d", i, *extra_table_ptr[i]->size);
-
-	}
-	puts("\n....\n\n");
-
-	for (i = 0; i < (table_size + 1); i++) {
+	for (i, j = 0; i < (table_size + 1); i++) {
 
 		if (equals(target->ip_addr, extra_table_ptr[i]->ip_addr)) continue;
 
-		memcpy(table_ptr[j++], extra_table_ptr[i], sizeof(struct element *));
+		table_ptr[j++] = extra_table_ptr[i];
+//		memcpy(table_ptr[j++], extra_table_ptr[i], sizeof(struct element *)); // produces segfault
 
 	}
-
-	printf("tableprint:\n");
-	for (i = 0; i < table_size; i++) {
-
-		printf("\nis table[%d] null? %d.\n", i, table_ptr[i] == NULL);
-
-		printf("\ntable[%d]'s ip_addr = %s", i, table_ptr[i]->ip_addr);
-
-	}
-	puts("\n....\n\n");
-
-	printf("tableprint:\n");
-	for (i = 0; i < (table_size + 1); i++) {
-
-		printf("\nextra_table[%d]'s ip = %s", i, extra_table_ptr[i]->ip_addr);
-
-	}
-	puts("\n....\n\n");
 
 	free(extra_table_ptr);
 	return;
 
 
 }
+
+
 
