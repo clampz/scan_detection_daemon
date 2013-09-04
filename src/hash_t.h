@@ -111,6 +111,10 @@ else copy an element from extra table back
 
 	for (i, j = 0; i < (table_size + 1); i++) {
 
+// added below at work
+		printf("equals(target: %s, extra_table[%d]: %s) = %d", target->ip_addr, i, extra_table_ptr[i]->ip_addr,
+			equals(target->ip_addr, extra_table_ptr[i]->ip_addr));
+
 		if (equals(target->ip_addr, extra_table_ptr[i]->ip_addr)) continue;
 
 		table_ptr[j++] = extra_table_ptr[i];
