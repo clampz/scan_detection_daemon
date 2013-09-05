@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 
 # ssd by David Weinman <david@weinman.com>
 
@@ -25,6 +25,7 @@ IP_ADDR=${IP_ADDR%%Bcast*}
 #
 IP_ADDR=${IP_ADDR/ /}
 
-./scan_detector $IP_ADDR 100
+echo "running with ip:$IP_ADDR"
+./scan_detector $IP_ADDR 1000
 
 
