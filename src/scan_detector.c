@@ -20,9 +20,15 @@ void caught_packet(u_char*, const struct pcap_pkthdr*, const u_char*);
 int isSYNPkt(const u_char*);
 int isFINPkt(const u_char*);
 int isXMASPkt(const u_char*);
+int isNULLPkt(const u_char*);
+int isUDPkt(const u_char*);
 void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*);
 
+// host ip string pointer
 char *host_ip;
+
+// packet capture loop counter
+int pcap_loop_cnt;
 
 // an error function
 void scan_fatal(const char *failed_in, const char *errbuf) {
@@ -45,6 +51,8 @@ void main(int argc, char ** argv) {
 	pcap_t *pcap_handle;
 	host_ip = argv[1];
 
+	pcap_loop_cnt = 0;
+
 	if (argc != 3) {printf("\nwrong # of args.\n\n"); exit(1);} 
 
 	device = pcap_lookupdev(errbuf);
@@ -55,15 +63,13 @@ void main(int argc, char ** argv) {
 
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
-// just testing with diff while loop condition
-	while (i++ < atoi(argv[2])) {
+	printf("Sniffing on device %s\n", device);
 
-		if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
-		printf("pkt # %d. ", i);
-		pcap_loop(pcap_handle, 1, caught_packet, NULL);
-		pcap_close(pcap_handle);
+	if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
-	}
+	pcap_loop(pcap_handle, atoi(argv[2]), caught_packet, NULL);
+
+	pcap_close(pcap_handle);
 
 	return;
 
@@ -91,7 +97,8 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 
 }
 
-// checks for SYN flag and writes info if it finds one
+// --VERBOSE ONE
+// function that is called when a packet is caught, checks for a scan on host ip port, calls alert_user if detection comes up true.
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
 
@@ -107,23 +114,24 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	total_header_size = ETH_HDR_LEN+IP_HDR_LEN+tcp_header_size;
 	pkt_data_len = cap_header->len - total_header_size;
 
+
+	printf("\npkt # %d, src_ip: %s, len: %d. ", pcap_loop_cnt++, inet_ntoa(ip_header->ip_src_addr), pkt_data_len);
+
 // if neither ip is a loopback addr, and the dest ip in the packet is the host ip
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
 	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
+
+		printf(" -- targeted!! -- ip_type == %d, ether_type == %d\n", (ip_header->ip_type), (eth_header->ether_type));
 
 //puts("\n1\n");
 
 // if the packet has only a SYN flag up
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
-	//		alert_user((const struct eth_hdr *) packet, (const struct tcp_hdr *)\
-	//			    packet + ETH_HDR_LEN, (const struct ip_hdr *) \
-	//			    packet + ETH_HDR_LEN + IP_HDR_LEN, "STEALTH SYN SCAN");
-
 			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN");
 
 		} // SYN if
-		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
+		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && ((int) ip_header->ip_type == 6) && ((int) eth_header->ether_type == 8)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN");
 
@@ -133,22 +141,33 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN");
 
 		} // XMAS if
-		else if (((int) ip_header->ip_type) == 6 && ((int) eth_header->ether_type) == 8) {
+		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 6) && (eth_header->ether_type == 8)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN");
 
 		} // NULL if
-		else if (((int) ip_header->ip_type) == 17 && ((int) eth_header->ether_type) == 8) {
+		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 17) && (eth_header->ether_type == 8)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN");
 
 		} // UDP if
 
-	} else { // ip loopback if
+	} //else { // ip loopback if
 	
-	} // else if not loopback
+	 //} // else if not loopback
 
 } // caught_packet
+
+// takes TCP header and checks for flags
+int isNULLPkt(const u_char *header_start) {
+
+	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)header_start;
+
+	return !(tcp_header->tcp_flags & TCP_SYN) && !(tcp_header->tcp_flags & TCP_URG)
+		&& !(tcp_header->tcp_flags & TCP_RST) && !(tcp_header->tcp_flags & TCP_PUSH)
+		&& !(tcp_header->tcp_flags & TCP_ACK) && !(tcp_header->tcp_flags & TCP_FIN);
+
+} // isNULLPkt
 
 // takes TCP header and checks for FIN flags, returns 1 if true
 int isFINPkt(const u_char *header_start) {
