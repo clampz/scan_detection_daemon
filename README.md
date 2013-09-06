@@ -1,4 +1,4 @@
-stealth scan detection deamon
+stealth scan detection daemon
 =====================
 
 ssdd start
