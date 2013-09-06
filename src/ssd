@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # ssd by David Weinman <david@weinman.com>
 
 #DEV=$(./pdefdev)
@@ -25,7 +24,19 @@ IP_ADDR=${IP_ADDR%%Bcast*}
 #
 IP_ADDR=${IP_ADDR/ /}
 
-echo "running with ip:$IP_ADDR"
-./scan_detector $IP_ADDR 1000
+echo "graph G {" > .neato_dat
 
+
+
+echo "running with ip:$IP_ADDR"
+
+PKT_DATA=$(./scan_detector $IP_ADDR 100)
+
+echo "$PKT_DATA" >> .neato_dat
+
+echo "overlap=false}" >> .neato_dat
+
+cat .neato_dat
+
+neato -Tpng -o png1 .neato_dat
 

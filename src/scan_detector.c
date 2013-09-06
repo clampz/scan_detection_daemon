@@ -63,7 +63,7 @@ void main(int argc, char ** argv) {
 
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
-	printf("Sniffing on device %s\n", device);
+	//printf("Sniffing on device %s\n", device);
 
 	if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
@@ -82,18 +82,18 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 	int i;
 
 //puts("\n2\n");
-	printf("%s%s%s", SCAN_ALERT_PRINT_1, type, SCAN_ALERT_PRINT_2);
+//	printf("%s%s%s", SCAN_ALERT_PRINT_1, type, SCAN_ALERT_PRINT_2);
 
-	printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
-	for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
+//	printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
+//	for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
 
-	puts("\n");
+//	puts("\n");
 
 	src_addr = inet_ntoa(ip_header->ip_src_addr);
-	printf("src ip addr: %s \n\n", src_addr);
+	printf("\n\"[%s] src ip: %s\" ", type, src_addr);
 
         dest_addr = inet_ntoa(ip_header->ip_dest_addr);
-        printf("| dst ip addr: %s\n", dest_addr);
+        printf("-- \"dst ip: %s\";\n", dest_addr);
 
 }
 
@@ -115,13 +115,13 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	pkt_data_len = cap_header->len - total_header_size;
 
 
-	printf("\npkt # %d, src_ip: %s, len: %d. ", pcap_loop_cnt++, inet_ntoa(ip_header->ip_src_addr), pkt_data_len);
+	//printf("\npkt # %d, src_ip: %s, len: %d. ", pcap_loop_cnt++, inet_ntoa(ip_header->ip_src_addr), pkt_data_len);
 
 // if neither ip is a loopback addr, and the dest ip in the packet is the host ip
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
 	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
 
-		printf(" -- targeted!! -- ip_type == %d, ether_type == %d\n", (ip_header->ip_type), (eth_header->ether_type));
+		//printf(" -- targeted!! -- ip_type == %d, ether_type == %d\n", (ip_header->ip_type), (eth_header->ether_type));
 
 //puts("\n1\n");
 
