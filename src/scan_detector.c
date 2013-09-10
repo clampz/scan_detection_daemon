@@ -82,7 +82,7 @@ int pcap_loop_cnt, logfd, graphfd;
 void handle_shutdown(int signal) {
 //   timestamp(logfd);
 //   write(logfd, "Shutting down..\n", 16);
-//   snprintf(log_buffer, "From %s:%d \"%s\"\t", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
+//   snprintf(log_buffer, (size_t) , "From %s:%d \"%s\"\t", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
 //   close(logfd);
    exit(0);
 }
@@ -155,9 +155,9 @@ void main(int argc, char ** argv) {
 }
 
 void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_header, 
-		const struct ip_hdr *ip_header, const char *type) {
+		const struct ip_hdr *ip_header, const char *type, int fd) {
 
-	char *src_addr, *dest_addr;
+	char *src_addr, *dest_addr, filebuf;
 	int i;
 
 //puts("\n2\n");
@@ -169,11 +169,16 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 //	puts("\n");
 
 	src_addr = inet_ntoa(ip_header->ip_src_addr);
-	write();
-//	printf("\n\"[%s] src ip: %s\" ", type, src_addr);
+
+	snprintf(filebuf, (size_t) 45, "\n\"[%s] src ip: %s\" ", type, src_addr");
+
+//	printf("\n\"[%s] src ip: %s\" ", type, src_addr); 3 + 12 + 10 + 17 + 2 
 
         dest_addr = inet_ntoa(ip_header->ip_dest_addr);
-  //      printf("-- \"dst ip: %s\";\n", dest_addr);
+
+	snprintf(filebuf, (size_t) 33, "-- \"dst ip: %s\";\n", type, src_addr");
+
+  //      printf("-- \"dst ip: %s\";\n", dest_addr); 12 + 17 + 3
 
 }
 
