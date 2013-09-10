@@ -26,8 +26,6 @@ IP_ADDR=${IP_ADDR/ /}
 
 echo "graph G {" > .neato_dat
 
-
-
 echo "running with ip:$IP_ADDR"
 
 PKT_DATA=$(./scan_detector $IP_ADDR 100)
@@ -36,7 +34,7 @@ echo "$PKT_DATA" >> .neato_dat
 
 echo "overlap=false}" >> .neato_dat
 
-cat .neato_dat
+#cat .neato_dat
 
 neato -Tpng -o png1 .neato_dat
 
