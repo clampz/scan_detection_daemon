@@ -28,6 +28,7 @@ char *inet_ntoa(struct in_addr in);
 
 int printf(const char *format, ...);
 int snprintf(char *str, size_t size, const char *format, ...);
+int fprintf(FILE * restrict stream, const char * restrict format, ...);
 
 #include <time.h>
 
@@ -58,7 +59,6 @@ size_t strftime(char *s, size_t max, const char *format, const struct tm *tm);
 #define "/var/logs/scandetectd.log" // log filename
 #define "var/logs/scandetectd_graph.log" // graph log filename
 
-// make a string length function for the inet_ntoa !!! 
 void handle_shutdown(int);
 void scan_fatal(const char *, const char *);
 void main(int, char **);
@@ -123,7 +123,7 @@ void main(int argc, char ** argv) {
         if (logfd == -1)
                 fatal("opening log file");
 
-	pcap_loop_cnt = 0;
+	//pcap_loop_cnt = 0;
 
 	if (argc != 3) {printf("\nwrong # of args.\n\n"); exit(1);} 
 
@@ -157,8 +157,10 @@ void main(int argc, char ** argv) {
 void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_header, 
 		const struct ip_hdr *ip_header, const char *type, int fd) {
 
-	char *src_addr, *dest_addr, filebuf;
+	char *src_addr, *dest_addr; // filebuf; ??
 	int i;
+
+	//if (not ) //hash_t for counting?
 
 //puts("\n2\n");
 //	printf("%s%s%s", SCAN_ALERT_PRINT_1, type, SCAN_ALERT_PRINT_2);
@@ -170,13 +172,17 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 
 	src_addr = inet_ntoa(ip_header->ip_src_addr);
 
-	snprintf(filebuf, (size_t) 45, "\n\"[%s] src ip: %s\" ", type, src_addr");
+	fprintf(graphfd, "\n\"[%s] src ip: %s\" ", type, src_addr");
+	//fprintf(logfd, "\n\"[%s] src ip: %s\" ", type, src_addr");
+//	snprintf(filebuf, (size_t) 45, "\n\"[%s] src ip: %s\" ", type, src_addr");
 
 //	printf("\n\"[%s] src ip: %s\" ", type, src_addr); 3 + 12 + 10 + 17 + 2 
 
         dest_addr = inet_ntoa(ip_header->ip_dest_addr);
 
-	snprintf(filebuf, (size_t) 33, "-- \"dst ip: %s\";\n", type, src_addr");
+	fprintf(graphfd, "-- \"dst ip: %s\";\n", dest_addr);
+	//fprintf(logfd, "-- \"dst ip: %s\";\n", dest_addr);
+//	snprintf(filebuf, (size_t) 33, "-- \"dst ip: %s\";\n", dest_addr);
 
   //      printf("-- \"dst ip: %s\";\n", dest_addr); 12 + 17 + 3
 
