@@ -3,17 +3,63 @@
  * last update: 08/16/13
  * */
 
+/*
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+int open(const char *pathname, int flags, mode_t mode);
+int open(const char *pathname, int flags);
+ssize_t write(int fd, const void *buf, size_t count);
+
+#include <pcap/pcap.h>
+
+char *pcap_lookupdev(char *errbuf);
+int pcap_loop(pcap_t *p, int cnt, pcap_handler callback, u_char *user);
+pcap_t *pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *errbuf);
+void pcap_close(pcap_t *p);
+
+#include <arpa/inet.h>
+
+char *inet_ntoa(struct in_addr in);
+
+#include <stdio.h>
+
+int printf(const char *format, ...);
+int snprintf(char *str, size_t size, const char *format, ...);
+
+#include <time.h>
+
+struct tm *localtime(const time_t *timep);
+size_t strftime(char *s, size_t max, const char *format, const struct tm *tm);
+
+*/
+
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <pcap/pcap.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <signal.h>
+#include <time.h>
 
 #include "malloc_dump.h"
 #include "net_structs.h"
-#include "hash_t.h"
+//#include "hash_t.h"
 
-#define SCAN_ALERT_PRINT_1 "\n-------------------\n\n       NETWORK SCAN ALERT (TYPE: "
-#define SCAN_ALERT_PRINT_2 ")\n\n-------------------\n"
+// constants for (printout??) purposes
+//#define SCAN_ALERT_PRINT_1 "\n-------------------\n\n       NETWORK SCAN ALERT (TYPE: "
+//#define SCAN_ALERT_PRINT_2 ")\n\n-------------------\n"
 
+#define "/var/logs/scandetectd.log" // log filename
+#define "var/logs/scandetectd_graph.log" // graph log filename
+
+// make a string length function for the inet_ntoa !!! 
+void handle_shutdown(int);
 void scan_fatal(const char *, const char *);
 void main(int, char **);
 void caught_packet(u_char*, const struct pcap_pkthdr*, const u_char*);
@@ -23,12 +69,23 @@ int isXMASPkt(const u_char*);
 int isNULLPkt(const u_char*);
 int isUDPkt(const u_char*);
 void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*);
+int get_file_size(int); // returns the filesize of open file descriptor 
+void timestamp(int); // writes a timestamp to the open file descriptor 
 
 // host ip string pointer
 char *host_ip;
 
-// packet capture loop counter
-int pcap_loop_cnt;
+// global packet capture loop counter, log and graph file descriptors
+int pcap_loop_cnt, logfd, graphfd;
+
+// This function is called when the process is killed 
+void handle_shutdown(int signal) {
+//   timestamp(logfd);
+//   write(logfd, "Shutting down..\n", 16);
+//   snprintf(log_buffer, "From %s:%d \"%s\"\t", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
+//   close(logfd);
+   exit(0);
+}
 
 // an error function
 void scan_fatal(const char *failed_in, const char *errbuf) {
@@ -38,6 +95,15 @@ void scan_fatal(const char *failed_in, const char *errbuf) {
         exit(1);
 
 }
+
+/*
+
+string pointers for captures of scans
+size of incoming ips
+size of various strings
+profits????!!!
+
+*/
 
 // main creates a listener and captures packets while looking 
 // for SYN flags in the TCP header
@@ -51,6 +117,12 @@ void main(int argc, char ** argv) {
 	pcap_t *pcap_handle;
 	host_ip = argv[1];
 
+	logfd = open(LOGFILE, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
+	graphfd = open(GRAPHFILE, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
+
+        if (logfd == -1)
+                fatal("opening log file");
+
 	pcap_loop_cnt = 0;
 
 	if (argc != 3) {printf("\nwrong # of args.\n\n"); exit(1);} 
@@ -60,6 +132,13 @@ void main(int argc, char ** argv) {
 	if (device == NULL) {
 		scan_fatal("pcap_lookupdev", errbuf);
 	}
+
+	if (daemon(0, 1) == -1) {
+		fatal("forking to daemon process");
+	}
+
+	signal(SIGTERM, handle_shutdown);
+	signal(SIGINT, handle_shutdown);
 
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
@@ -90,10 +169,11 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 //	puts("\n");
 
 	src_addr = inet_ntoa(ip_header->ip_src_addr);
-	printf("\n\"[%s] src ip: %s\" ", type, src_addr);
+	write();
+//	printf("\n\"[%s] src ip: %s\" ", type, src_addr);
 
         dest_addr = inet_ntoa(ip_header->ip_dest_addr);
-        printf("-- \"dst ip: %s\";\n", dest_addr);
+  //      printf("-- \"dst ip: %s\";\n", dest_addr);
 
 }
 
@@ -223,4 +303,34 @@ int isSYNPkt(const u_char *header_start) {
 	return tcp_header->tcp_flags & TCP_SYN;
 
 } // isSYNPkt
+
+/* This function writes a timestamp string to the open file descriptor 
+ * passed to it. 
+ */
+void timestamp(fd) {
+   time_t now;
+   struct tm *time_struct;
+   int length;
+   char time_buffer[40];
+
+   time(&now);  // get number of seconds since epoch 
+   time_struct = localtime((const time_t *)&now); // convert to tm struct 
+   length = strftime(time_buffer, 40, "%m/%d/%Y %H:%M:%S> ", time_struct);
+   write(fd, time_buffer, length); // write timestamp string to log 
+}
+
+
+/* This function accepts an open file descriptor and returns     
+ * the size of the associated file. Returns -1 on failure. 
+ */
+int get_file_size(int fd) {
+   struct stat stat_struct;
+
+   if(fstat(fd, &stat_struct) == -1)
+      return -1;
+   return (int) stat_struct.st_size;
+}
+
+
+
 

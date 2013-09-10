@@ -24,17 +24,27 @@ IP_ADDR=${IP_ADDR%%Bcast*}
 #
 IP_ADDR=${IP_ADDR/ /}
 
+cd ~/stealth_scan_detector-master/src/
+
 echo "graph G {" > .neato_dat
+
+
 
 echo "running with ip:$IP_ADDR"
 
 PKT_DATA=$(./scan_detector $IP_ADDR 100)
 
+#cd bin/scandd/
+
+cd ~/stealth_scan_detector-master/src/
+
 echo "$PKT_DATA" >> .neato_dat
 
 echo "overlap=false}" >> .neato_dat
 
-#cat .neato_dat
+cat .neato_dat
 
-neato -Tpng -o png1 .neato_dat
+neato -Tpng -o neato4 .neato_dat
+
+
 
