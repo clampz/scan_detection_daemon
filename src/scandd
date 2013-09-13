@@ -1,12 +1,8 @@
 #!/bin/bash
 # scan detection daemon by David Weinman <david@weinman.com>
 
-# BT 5
-#IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet")
-#IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet"); IP_ADDR="${IP_ADDR/inet addr:/}"; IP_ADDR=${IP_ADDR%%Bcast*}; IP_ADDR=${IP/ /} 
+# BT 5 / KALI
 IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
-
-LAUNCH_DIR=$(pwd)
 
 # if the cl args aren't equal to one, then print usage and exit
 if [[ ! $# -eq 1 ]]
@@ -31,9 +27,6 @@ fi
 
 PROCESS_ID=$(ps -C scan_detector -o pid= ); 
 
-
-#echo "graph G {" > .neato_dat
-
 if [ "$1" == "start" ]; then
 
   if [ ! "$PROCESS_ID" == "" ]; then
@@ -52,10 +45,12 @@ elif [ "$1" == "png" ]; then
 
 elif [ "$1" == "stop" ]; then
 
-  # if [ "$PROCESS_ID" == "" ]; then
-  #   echo "error, nothing to kill?"
-  #   exit
-  # fi
+  if [ "$PROCESS_ID" == "" ]; then
+
+    echo "error, nothing to kill?"
+    exit
+
+  fi
   kill $PROCESS_ID
 
 elif [ "$1" == "status" ]; then
@@ -63,6 +58,9 @@ elif [ "$1" == "status" ]; then
   cat /var/logs/scandetectd.log
 
 fi
+
+PROCESSID=""
+IP=""
 
 
 

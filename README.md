@@ -1,14 +1,7 @@
 stealth scan detection daemon
 =====================
 
-ssdd start
+compile pdefdev.c and scan_detector.c, then use the bash wrapper program scandd.
 
-ssdd print
-
-ssdd stop
-
-ssdd clear
-
-
-
+Usage: ./scandd [start | stop | status | png]
 
