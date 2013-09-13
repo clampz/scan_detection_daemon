@@ -142,7 +142,7 @@ int main(int argc, char ** argv) {
 
 	while (1) {
 
-		if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
+		if (i++ > 0) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
 		pcap_loop(pcap_handle, atoi(argv[2]), caught_packet, NULL);
 		pcap_close(pcap_handle);
@@ -190,30 +190,35 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
 			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", graphfd);
+			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", logfd);
 
 		} // SYN if
 		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && ((int) ip_header->ip_type == 6) && ((int) eth_header->ether_type == 8)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN", graphfd);
+			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN", logfd);
 
 		} // FIN if
 		else if (isXMASPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", graphfd);
+			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", logfd);
 
 		} // XMAS if
 		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 6) && (eth_header->ether_type == 8)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", graphfd);
+			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", logfd);
 
 		} // NULL if
 		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 17) && (eth_header->ether_type == 8)) {
 
 			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", graphfd);
+			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", logfd);
 
 		} // UDP if

@@ -1,32 +1,55 @@
 #!/bin/bash
-
 # scan detection daemon by David Weinman <david@weinman.com>
 
-# BT 5 / KALI
+# BT 5
+#IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet")
+#IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet"); IP_ADDR="${IP_ADDR/inet addr:/}"; IP_ADDR=${IP_ADDR%%Bcast*}; IP_ADDR=${IP/ /} 
 IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
 
+PROCESS_ID=$(ps -C scan_detector -o pid= ); 
+
+LAUNCH_DIR=$(pwd)
+
 # if the cl args aren't equal to one, then print usage and exit
-if [[ ! $# -eq 1 ]]
-  then
+if [[ ! $# -eq 1 ]]; then
+
     echo "Usage: $0 [start | stop | status | png]"
     exit
+
 fi
 
 # check for log files, if they don't exist, then make them.
-if [[ -f "/var/logs/" ]]
-  then
+if [[ -f "/var/logs/" ]]; then
+
     mkdir /var/logs/
-fi
-if [[ ! -f "/var/logs/scandetectd_graph.log" ]]
-  then
-    touch "/var/logs/scandetectd_graph.log"
-fi
-if [[ ! -f "/var/logs/scandetectd.log" ]]
-  then
-    touch "/var/logs/scandetectd.log"
+
 fi
 
-PROCESS_ID=$(ps -C scan_detector -o pid= ); 
+if [[ ! -f "/var/logs/scandetectd_graph.log" ]]; then
+  touch "/var/logs/scandetectd_graph.log"
+
+fi
+
+if [ "$PROCESS_ID" == "" ]; then
+
+  if [ -f "/var/logs/scandetectd.log" ]; then
+
+    rm "/var/logs/scandetectd_graph.log"
+    touch "/var/logs/scandetectd_graph.log"
+
+    rm "/var/logs/scandetectd.log"
+    touch "/var/logs/scandetectd.log"
+
+  fi
+
+fi
+
+if [[ ! -f "/var/logs/scandetectd.log" ]]
+
+  then
+    touch "/var/logs/scandetectd.log"
+
+fi
 
 if [ "$1" == "start" ]; then
 
@@ -47,10 +70,8 @@ elif [ "$1" == "png" ]; then
 elif [ "$1" == "stop" ]; then
 
   if [ "$PROCESS_ID" == "" ]; then
-
     echo "error, nothing to kill?"
     exit
-
   fi
   kill $PROCESS_ID
 
@@ -58,10 +79,13 @@ elif [ "$1" == "status" ]; then
 
   cat /var/logs/scandetectd.log
 
+else
+
+  echo "Usage: $0 [start | stop | status | png]"
+  exit
+
 fi
 
-PROCESSID=""
+PROCESS_ID=""
 IP=""
-
-
 
