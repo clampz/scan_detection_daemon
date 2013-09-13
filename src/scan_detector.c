@@ -1,7 +1,10 @@
 /* scan_detector.c
  * written by: David Weinman
- * last update: 08/16/13
+ * last update: 09/13/13
  * */
+
+/* note: this code was influenced by Jon Erikson's
+   'Hacking: The Art of Exploitation' */
 
 /*
 
@@ -50,7 +53,6 @@ size_t strftime(char *s, size_t max, const char *format, const struct tm *tm);
 
 #include "malloc_dump.h"
 #include "net_structs.h"
-//#include "hash_t.h"
 
 // constants for (printout??) purposes
 //#define SCAN_ALERT_PRINT_1 "\n-------------------\n\n       NETWORK SCAN ALERT (TYPE: "
@@ -96,15 +98,6 @@ void scan_fatal(const char *failed_in, const char *errbuf) {
 
 }
 
-/*
-
-string pointers for captures of scans
-size of incoming ips
-size of various strings
-profits????!!!
-
-*/
-
 // main creates a listener and captures packets while looking 
 // for SYN flags in the TCP header
 int main(int argc, char ** argv) {
@@ -145,15 +138,15 @@ int main(int argc, char ** argv) {
 
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
 
-	//printf("Sniffing on device %s\n", device);
-
 	pcap_loop_cnt = 0;
 
 	while (1) {
-//		fdprintf(logfd, 30, "\n154:for loop main: %d\n ", i++);
+
 		if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
+
 		pcap_loop(pcap_handle, atoi(argv[2]), caught_packet, NULL);
 		pcap_close(pcap_handle);
+
 	}
 
 	return 0;
@@ -161,35 +154,18 @@ int main(int argc, char ** argv) {
 }
 
 void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_header, 
+
 		const struct ip_hdr *ip_header, const char *type, int fd) {
 
-	char *src_addr, *dest_addr; // filebuf; ??
+	char *src_addr, *dest_addr;
 	int i;
 
-
-//puts("\n2\n");
-//	printf("%s%s%s", SCAN_ALERT_PRINT_1, type, SCAN_ALERT_PRINT_2);
-
-//	printf("\nsrc mac addr: %02x", eth_header->src_eth_addr[0]);
-//	for (i = 1; i < ETH_ADDR_LEN; i++) printf(":%02x", eth_header->src_eth_addr[i]);
-
-//	puts("\n");
-
 	fdprintf(fd, 46, "\n\"[%s] src ip: %s\" ", type, inet_ntoa(ip_header->ip_src_addr));
-	//fprintf(logfd, "\n\"[%s] src ip: %s\" ", type, src_addr);
-//	snprintf(filebuf, (size_t) 45, "\n\"[%s] src ip: %s\" ", type, src_addr");
-
-//	printf("\n\"[%s] src ip: %s\" ", type, src_addr); 3 + 12 + 10 + 17 + 2 
 
 	fdprintf(fd, 34, "-- \"dst ip: %s\";\n", inet_ntoa(ip_header->ip_dest_addr));
-	//fprintf(logfd, "-- \"dst ip: %s\";\n", dest_addr);
-//	snprintf(filebuf, (size_t) 33, "-- \"dst ip: %s\";\n", dest_addr);
-
-  //      printf("-- \"dst ip: %s\";\n", dest_addr); 12 + 17 + 3
 
 }
 
-// --VERBOSE ONE
 // function that is called when a packet is caught, checks for a scan on host ip port, calls alert_user if detection comes up true.
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
@@ -206,21 +182,9 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	total_header_size = ETH_HDR_LEN+IP_HDR_LEN+tcp_header_size;
 	pkt_data_len = cap_header->len - total_header_size;
 
-//	fdprintf(logfd, 23, "\ncaught packet #%d\n", ++pcap_loop_cnt);
-
-//	fdprintf(logfd, 63, "\npkt # %d, src_ip: %s, len: %d. ", pcap_loop_cnt, inet_ntoa(ip_header->ip_src_addr), pkt_data_len);
-
-	
-//	fdprintf(logfd, 25, "220:condition in cp = %d", ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
-  //          && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)));
-
 // if neither ip is a loopback addr, and the dest ip in the packet is the host ip
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
 	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
-
-		//printf(" -- targeted!! -- ip_type == %d, ether_type == %d\n", (ip_header->ip_type), (eth_header->ether_type));
-
-//puts("\n1\n");
 
 // if the packet has only a SYN flag up
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
