@@ -40,10 +40,10 @@ size_t strftime(char *s, size_t max, const char *format, const struct tm *tm);
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include <pcap/pcap.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
@@ -56,21 +56,21 @@ size_t strftime(char *s, size_t max, const char *format, const struct tm *tm);
 //#define SCAN_ALERT_PRINT_1 "\n-------------------\n\n       NETWORK SCAN ALERT (TYPE: "
 //#define SCAN_ALERT_PRINT_2 ")\n\n-------------------\n"
 
-#define "/var/logs/scandetectd.log" // log filename
-#define "var/logs/scandetectd_graph.log" // graph log filename
+#define LOGFILE "/var/logs/scandetectd.log" // log filename
+#define GRAPHFILE "/var/logs/scandetectd_graph.log" // graph log filename
 
 void handle_shutdown(int);
 void scan_fatal(const char *, const char *);
-void main(int, char **);
 void caught_packet(u_char*, const struct pcap_pkthdr*, const u_char*);
+void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*, int);
+void timestamp(int); // writes a timestamp to the open file descriptor 
+int main(int, char **);
 int isSYNPkt(const u_char*);
 int isFINPkt(const u_char*);
 int isXMASPkt(const u_char*);
 int isNULLPkt(const u_char*);
 int isUDPkt(const u_char*);
-void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*);
 int get_file_size(int); // returns the filesize of open file descriptor 
-void timestamp(int); // writes a timestamp to the open file descriptor 
 
 // host ip string pointer
 char *host_ip;
@@ -80,10 +80,10 @@ int pcap_loop_cnt, logfd, graphfd;
 
 // This function is called when the process is killed 
 void handle_shutdown(int signal) {
-//   timestamp(logfd);
-//   write(logfd, "Shutting down..\n", 16);
-//   snprintf(log_buffer, (size_t) , "From %s:%d \"%s\"\t", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
-//   close(logfd);
+   timestamp(logfd);
+   write(logfd, "Shutting down..\n", 16);
+   close(logfd);
+   close (graphfd);
    exit(0);
 }
 
@@ -107,7 +107,7 @@ profits????!!!
 
 // main creates a listener and captures packets while looking 
 // for SYN flags in the TCP header
-void main(int argc, char ** argv) {
+int main(int argc, char ** argv) {
 
 	int i = 0;
         struct pcap_pkthdr cap_header;
@@ -117,13 +117,16 @@ void main(int argc, char ** argv) {
 	pcap_t *pcap_handle;
 	host_ip = argv[1];
 
+	fdprintf(1, 40, "\nscandd running with ip: %s\n", argv[1]);
+
 	logfd = open(LOGFILE, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
 	graphfd = open(GRAPHFILE, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
 
         if (logfd == -1)
                 fatal("opening log file");
 
-	//pcap_loop_cnt = 0;
+   	timestamp(logfd);
+	write(logfd, "Starting up..\n", 15);
 
 	if (argc != 3) {printf("\nwrong # of args.\n\n"); exit(1);} 
 
@@ -144,13 +147,16 @@ void main(int argc, char ** argv) {
 
 	//printf("Sniffing on device %s\n", device);
 
-	if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
+	pcap_loop_cnt = 0;
 
-	pcap_loop(pcap_handle, atoi(argv[2]), caught_packet, NULL);
+	while (1) {
+//		fdprintf(logfd, 30, "\n154:for loop main: %d\n ", i++);
+		if (i > 1) pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
+		pcap_loop(pcap_handle, atoi(argv[2]), caught_packet, NULL);
+		pcap_close(pcap_handle);
+	}
 
-	pcap_close(pcap_handle);
-
-	return;
+	return 0;
 
 }
 
@@ -160,7 +166,6 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 	char *src_addr, *dest_addr; // filebuf; ??
 	int i;
 
-	//if (not ) //hash_t for counting?
 
 //puts("\n2\n");
 //	printf("%s%s%s", SCAN_ALERT_PRINT_1, type, SCAN_ALERT_PRINT_2);
@@ -170,17 +175,13 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 
 //	puts("\n");
 
-	src_addr = inet_ntoa(ip_header->ip_src_addr);
-
-	fprintf(graphfd, "\n\"[%s] src ip: %s\" ", type, src_addr");
-	//fprintf(logfd, "\n\"[%s] src ip: %s\" ", type, src_addr");
+	fdprintf(fd, 46, "\n\"[%s] src ip: %s\" ", type, inet_ntoa(ip_header->ip_src_addr));
+	//fprintf(logfd, "\n\"[%s] src ip: %s\" ", type, src_addr);
 //	snprintf(filebuf, (size_t) 45, "\n\"[%s] src ip: %s\" ", type, src_addr");
 
 //	printf("\n\"[%s] src ip: %s\" ", type, src_addr); 3 + 12 + 10 + 17 + 2 
 
-        dest_addr = inet_ntoa(ip_header->ip_dest_addr);
-
-	fprintf(graphfd, "-- \"dst ip: %s\";\n", dest_addr);
+	fdprintf(fd, 34, "-- \"dst ip: %s\";\n", inet_ntoa(ip_header->ip_dest_addr));
 	//fprintf(logfd, "-- \"dst ip: %s\";\n", dest_addr);
 //	snprintf(filebuf, (size_t) 33, "-- \"dst ip: %s\";\n", dest_addr);
 
@@ -205,8 +206,13 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	total_header_size = ETH_HDR_LEN+IP_HDR_LEN+tcp_header_size;
 	pkt_data_len = cap_header->len - total_header_size;
 
+//	fdprintf(logfd, 23, "\ncaught packet #%d\n", ++pcap_loop_cnt);
 
-	//printf("\npkt # %d, src_ip: %s, len: %d. ", pcap_loop_cnt++, inet_ntoa(ip_header->ip_src_addr), pkt_data_len);
+//	fdprintf(logfd, 63, "\npkt # %d, src_ip: %s, len: %d. ", pcap_loop_cnt, inet_ntoa(ip_header->ip_src_addr), pkt_data_len);
+
+	
+//	fdprintf(logfd, 25, "220:condition in cp = %d", ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
+  //          && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)));
 
 // if neither ip is a loopback addr, and the dest ip in the packet is the host ip
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
@@ -219,27 +225,32 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 // if the packet has only a SYN flag up
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
-			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN");
+			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", graphfd);
+			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", logfd);
 
 		} // SYN if
 		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && ((int) ip_header->ip_type == 6) && ((int) eth_header->ether_type == 8)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN");
+			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN", graphfd);
+			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN", logfd);
 
 		} // FIN if
 		else if (isXMASPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN");
+			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", graphfd);
+			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", logfd);
 
 		} // XMAS if
 		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 6) && (eth_header->ether_type == 8)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN");
+			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", graphfd);
+			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", logfd);
 
 		} // NULL if
 		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 17) && (eth_header->ether_type == 8)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN");
+			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", graphfd);
+			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", logfd);
 
 		} // UDP if
 
@@ -253,6 +264,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 int isNULLPkt(const u_char *header_start) {
 
 	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)header_start;
+	//fdprintf(logfd, 23, "\ncaught packet #%d\n", ++pcap_loop_cnt);
 
 	return !(tcp_header->tcp_flags & TCP_SYN) && !(tcp_header->tcp_flags & TCP_URG)
 		&& !(tcp_header->tcp_flags & TCP_RST) && !(tcp_header->tcp_flags & TCP_PUSH)
@@ -318,7 +330,7 @@ int isSYNPkt(const u_char *header_start) {
 /* This function writes a timestamp string to the open file descriptor 
  * passed to it. 
  */
-void timestamp(fd) {
+void timestamp(int fd) {
    time_t now;
    struct tm *time_struct;
    int length;
@@ -341,7 +353,6 @@ int get_file_size(int fd) {
       return -1;
    return (int) stat_struct.st_size;
 }
-
 
 
 
