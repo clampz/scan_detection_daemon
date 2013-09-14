@@ -8,12 +8,10 @@ IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=
 
 PROCESS_ID=$(ps -C scan_detector -o pid= ); 
 
-LAUNCH_DIR=$(pwd)
-
 # if the cl args aren't equal to one, then print usage and exit
 if [[ ! $# -eq 1 ]]; then
 
-    echo "Usage: $0 [start | stop | status | png]"
+    echo "Usage: $0 [start | stop | status | clear | png]"
     exit
 
 fi
@@ -26,11 +24,11 @@ if [[ -f "/var/logs/" ]]; then
 fi
 
 if [[ ! -f "/var/logs/scandetectd_graph.log" ]]; then
+
   touch "/var/logs/scandetectd_graph.log"
+  touch "/var/logs/scandetectd.log"
 
-fi
-
-if [ "$PROCESS_ID" == "" ]; then
+elif [ "$PROCESS_ID" == "" ]; then
 
   if [ -f "/var/logs/scandetectd.log" ]; then
 
@@ -44,13 +42,6 @@ if [ "$PROCESS_ID" == "" ]; then
 
 fi
 
-if [[ ! -f "/var/logs/scandetectd.log" ]]
-
-  then
-    touch "/var/logs/scandetectd.log"
-
-fi
-
 if [ "$1" == "start" ]; then
 
   if [ ! "$PROCESS_ID" == "" ]; then
@@ -59,13 +50,14 @@ if [ "$1" == "start" ]; then
   fi
 
   echo "graph G {" >> /var/logs/scandetectd_graph.log
+  ifconfig $DEV promisc
   ./scan_detector $IP 100
 
 elif [ "$1" == "png" ]; then
 
   cp /var/logs/scandetectd_graph.log .neato_dat
   echo "overlap=false}" >> .neato_dat
-  neato -Tpng -o neato4 .neato_dat
+  NOW=$(date +%F--%R%p); neato -Tpng -o $NOW .neato_dat
 
 elif [ "$1" == "stop" ]; then
 
@@ -73,15 +65,26 @@ elif [ "$1" == "stop" ]; then
     echo "error, nothing to kill?"
     exit
   fi
+
   kill $PROCESS_ID
 
 elif [ "$1" == "status" ]; then
 
   cat /var/logs/scandetectd.log
 
+elif [ "$1" == "clear" ]; then
+
+  if [ ! "$PROCESS_ID" == "" ]; then
+    echo "wait! there's a scan detection daemon running!"
+    exit
+  fi
+
+  echo "" > /var/logs/scandetectd.log
+  echo "" > /var/logs/scandetectd_graph.log
+
 else
 
-  echo "Usage: $0 [start | stop | status | png]"
+  echo "Usage: $0 [start | stop | status | clear | png]"
   exit
 
 fi

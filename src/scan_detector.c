@@ -40,16 +40,11 @@ size_t strftime(char *s, size_t max, const char *format, const struct tm *tm);
 
 */
 
-
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <pcap/pcap.h>
 #include <arpa/inet.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
-#include <time.h>
 
 #include "malloc_dump.h"
 #include "net_structs.h"
@@ -65,14 +60,12 @@ void handle_shutdown(int);
 void scan_fatal(const char *, const char *);
 void caught_packet(u_char*, const struct pcap_pkthdr*, const u_char*);
 void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*, int);
-void timestamp(int); // writes a timestamp to the open file descriptor 
 int main(int, char **);
 int isSYNPkt(const u_char*);
 int isFINPkt(const u_char*);
 int isXMASPkt(const u_char*);
 int isNULLPkt(const u_char*);
 int isUDPkt(const u_char*);
-int get_file_size(int); // returns the filesize of open file descriptor 
 
 // host ip string pointer
 char *host_ip;
@@ -160,9 +153,9 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 	char *src_addr, *dest_addr;
 	int i;
 
-	fdprintf(fd, 46, "\n\"[%s] src ip: %s\" ", type, inet_ntoa(ip_header->ip_src_addr));
+	fdprintf(fd, 45, "\"[%s] src ip: %s\" ", type, inet_ntoa(ip_header->ip_src_addr));
 
-	fdprintf(fd, 34, "-- \"dst ip: %s\";\n", inet_ntoa(ip_header->ip_dest_addr));
+	fdprintf(fd, 35, "-- \"dst ip: %s\";\n\n", inet_ntoa(ip_header->ip_dest_addr));
 
 }
 
@@ -295,33 +288,4 @@ int isSYNPkt(const u_char *header_start) {
 	return tcp_header->tcp_flags & TCP_SYN;
 
 } // isSYNPkt
-
-/* This function writes a timestamp string to the open file descriptor 
- * passed to it. 
- */
-void timestamp(int fd) {
-   time_t now;
-   struct tm *time_struct;
-   int length;
-   char time_buffer[40];
-
-   time(&now);  // get number of seconds since epoch 
-   time_struct = localtime((const time_t *)&now); // convert to tm struct 
-   length = strftime(time_buffer, 40, "%m/%d/%Y %H:%M:%S> ", time_struct);
-   write(fd, time_buffer, length); // write timestamp string to log 
-}
-
-
-/* This function accepts an open file descriptor and returns     
- * the size of the associated file. Returns -1 on failure. 
- */
-int get_file_size(int fd) {
-   struct stat stat_struct;
-
-   if(fstat(fd, &stat_struct) == -1)
-      return -1;
-   return (int) stat_struct.st_size;
-}
-
-
 
