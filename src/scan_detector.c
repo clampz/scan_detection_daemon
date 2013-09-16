@@ -148,7 +148,7 @@ int main(int argc, char ** argv) {
 
 void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_header, 
 
-		const struct ip_hdr *ip_header, const char *type, int fd) {
+	const struct ip_hdr *ip_header, const char *type, int fd) {
 
 	char *src_addr, *dest_addr;
 	int i;
@@ -176,10 +176,10 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	pkt_data_len = cap_header->len - total_header_size;
 
 // if neither ip is a loopback addr, and the dest ip in the packet is the host ip
+
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
 	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
 
-// if the packet has only a SYN flag up
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
 			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", graphfd);
@@ -216,9 +216,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 
 		} // UDP if
 
-	} //else { // ip loopback if
-	
-	 //} // else if not loopback
+	}
 
 } // caught_packet
 
