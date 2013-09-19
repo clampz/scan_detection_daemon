@@ -1,6 +1,10 @@
 stealth scan detection daemon
 =====================
 
+the stealth scan detection daemon sniffs packets in the background filtering out 
+packets with certain flags on, pointed at the host computer and logs it to files
+in ```/var/logs/```.
+
 compile pdefdev.c and scan_detector.c, then use the bash wrapper program scandd.
 
 usage: ./scandd [start | stop | status | clear | png]
