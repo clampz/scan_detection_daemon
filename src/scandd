@@ -108,5 +108,7 @@ else
 
 fi
 
+DEV=""
 PROCESS_ID=""
 IP=""
+

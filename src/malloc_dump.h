@@ -6,6 +6,9 @@
 /* note: this code was heavily influenced by the book 'Hacking:
  * The Art of Exploitation' by Jon Erikson */
 
+#ifndef MALLOC_DUMP_H
+#define MALLOC_DUMP_H
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -123,4 +126,6 @@ int get_file_size(int fd) {
 	return (int) stat_struct.st_size;
 
 }
+
+#endif // MALLOC_DUMP_H
 

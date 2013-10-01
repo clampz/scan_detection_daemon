@@ -6,6 +6,9 @@
 /* note: this code was heavily influenced by Jon Erikson's
    'Hacking: The Art of Exploitation' */
 
+#ifndef NET_STRUCTS_H
+#define NET_STRUCTS_H
+
 #include <sys/types.h>
 #include <netinet/in.h>
 
@@ -75,6 +78,5 @@ struct tcp_hdr {
 
 };
 
-
-
+#endif // NET_STRUCTS_H
 
