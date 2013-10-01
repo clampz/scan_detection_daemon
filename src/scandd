@@ -10,11 +10,7 @@ IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=
 # NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
 IP=$(DEV=$(sudo ./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%netmask*}"
 
-<<<<<<< HEAD
 PROCESS_ID=$(ps -C scan_detector -o pid= ) 
-=======
-PROCESS_ID=$(ps -C scan_detector -o pid= ); 
->>>>>>> d88318e5faae7fc5b03aad9f1af0f4ba878a3388
 
 # if the cl args aren't equal to one, then print usage and exit
 if [[ ! $# -eq 1 ]]; then
