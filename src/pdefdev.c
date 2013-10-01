@@ -9,9 +9,9 @@
 #include <pcap/pcap.h>
 #include "malloc_dump.h"
 
-void main(int, char **);
+int main(int, char **);
 
-void main(int argc, char **argv) {
+int main(int argc, char **argv) {
 
 	char errbuf[PCAP_ERRBUF_SIZE];
         char *device;
@@ -29,7 +29,7 @@ void main(int argc, char **argv) {
 // print the id
 	printf("%s\n", device);
 
-	return;
+	return 0;
 
 }
 

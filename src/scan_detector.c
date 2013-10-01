@@ -1,20 +1,12 @@
 /* scan_detector.c
  * written by: David Weinman
- * last update: 09/13/13
+ * last update: 09/30/13
  * */
 
 /* note: this code was influenced by Jon Erikson's
    'Hacking: The Art of Exploitation' */
 
 /*
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-int open(const char *pathname, int flags, mode_t mode);
-int open(const char *pathname, int flags);
-ssize_t write(int fd, const void *buf, size_t count);
 
 #include <pcap/pcap.h>
 
@@ -27,31 +19,32 @@ void pcap_close(pcap_t *p);
 
 char *inet_ntoa(struct in_addr in);
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+int open(const char *pathname, int flags, mode_t mode);
+int open(const char *pathname, int flags);
+ssize_t write(int fd, const void *buf, size_t count);
+
 #include <stdio.h>
 
 int printf(const char *format, ...);
 int snprintf(char *str, size_t size, const char *format, ...);
 int fprintf(FILE * restrict stream, const char * restrict format, ...);
 
-#include <time.h>
-
-struct tm *localtime(const time_t *timep);
-size_t strftime(char *s, size_t max, const char *format, const struct tm *tm);
-
 */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <pcap/pcap.h>
 #include <arpa/inet.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
 
 #include "malloc_dump.h"
 #include "net_structs.h"
-
-// constants for (printout??) purposes
-//#define SCAN_ALERT_PRINT_1 "\n-------------------\n\n       NETWORK SCAN ALERT (TYPE: "
-//#define SCAN_ALERT_PRINT_2 ")\n\n-------------------\n"
 
 #define LOGFILE "/var/logs/scandetectd.log" // log filename
 #define GRAPHFILE "/var/logs/scandetectd_graph.log" // graph log filename
@@ -75,12 +68,14 @@ int pcap_loop_cnt, logfd, graphfd;
 
 // This function is called when the process is killed 
 void handle_shutdown(int signal) {
+
    timestamp(logfd);
    write(logfd, "Shutting down..\n", 16);
    close(logfd);
    close (graphfd);
    exit(0);
-}
+
+} // handle_shutdown
 
 // an error function
 void scan_fatal(const char *failed_in, const char *errbuf) {
@@ -89,7 +84,7 @@ void scan_fatal(const char *failed_in, const char *errbuf) {
 	fatal((char *) errbuf);
         exit(1);
 
-}
+} // scan_fatal
 
 // main creates a listener and captures packets while looking 
 // for SYN flags in the TCP header
@@ -144,8 +139,10 @@ int main(int argc, char ** argv) {
 
 	return 0;
 
-}
+} // main
 
+// this function is called by caught_packet when the conditions for scan detection are true.
+// it prints scan detection information to the appropriate log files
 void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_header, 
 
 	const struct ip_hdr *ip_header, const char *type, int fd) {
@@ -157,7 +154,7 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 
 	fdprintf(fd, 35, "-- \"dst ip: %s\";\n\n", inet_ntoa(ip_header->ip_dest_addr));
 
-}
+} // alert_user
 
 // function that is called when a packet is caught, checks for a scan on host ip port, calls alert_user if detection comes up true.
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {

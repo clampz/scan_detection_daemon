@@ -1,12 +1,16 @@
 #!/bin/bash
 # scan detection daemon by David Weinman <david@weinman.com>
 
-# BT 5
+# BT 5 / Kali
 #IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet")
 #IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet"); IP_ADDR="${IP_ADDR/inet addr:/}"; IP_ADDR=${IP_ADDR%%Bcast*}; IP_ADDR=${IP/ /} 
 IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
 
-PROCESS_ID=$(ps -C scan_detector -o pid= ); 
+# OSX 11
+# NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
+IP=$(DEV=$(sudo ./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%netmask*}"
+
+PROCESS_ID=$(ps -C scan_detector -o pid= ) 
 
 # if the cl args aren't equal to one, then print usage and exit
 if [[ ! $# -eq 1 ]]; then
@@ -49,15 +53,21 @@ if [ "$1" == "start" ]; then
     exit
   fi
 
-  echo "graph G {" >> /var/logs/scandetectd_graph.log
   ifconfig $DEV promisc
   ./scan_detector $IP 100
 
 elif [ "$1" == "png" ]; then
 
-  cp /var/logs/scandetectd_graph.log .neato_dat
+# count the number of occurences of things to color, 
+# organize the color in the beginning of .neato_dat
+
+  
+
+  echo "graph G {" >> .neato_dat
+  cat /var/logs/scandetectd_graph.log >> .neato_dat
   echo "overlap=false}" >> .neato_dat
   NOW=$(date +%F--%R%p); neato -Tpng -o $NOW .neato_dat
+  NOW=""
 
 elif [ "$1" == "stop" ]; then
 
@@ -70,7 +80,16 @@ elif [ "$1" == "stop" ]; then
 
 elif [ "$1" == "status" ]; then
 
-  cat /var/logs/scandetectd.log
+  ps aux > tmp; PS_SD=$(cat tmp | grep scan_detector)
+  echo "
+$PS_SD
+
+-----
+" > printout
+  cat /var/logs/scandetectd.log >> printout
+  cat printout | less
+  rm printout
+  PS_SD=""
 
 elif [ "$1" == "clear" ]; then
 
@@ -91,4 +110,3 @@ fi
 
 PROCESS_ID=""
 IP=""
-
