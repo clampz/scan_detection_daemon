@@ -21,25 +21,30 @@
 
 // A function to display an error message and then exit
 void fatal(char *message) {
+
    char error_message[100];
 
    strcpy(error_message, "[!!] Fatal Error ");
    strncat(error_message, message, 83);
    perror(error_message);
    exit(-1);
-}
+
+} // fatal
 
 // An error checked malloc() wrapper function
 void *ec_malloc(unsigned int size) {
+
    void *ptr;
    ptr = malloc(size);
    if(ptr == NULL)
       fatal("in ec_malloc() on memory allocation");
    return ptr;
-}
+
+} // ec_malloc
 
 // dumps raw memory in hex byte and printable split format
 void dump(const unsigned char *data_buffer, const unsigned int length) {
+
 	unsigned char byte;
 	unsigned int i, j;
 	for(i=0; i < length; i++) {
@@ -59,7 +64,8 @@ void dump(const unsigned char *data_buffer, const unsigned int length) {
 			printf("\n"); // end of the dump line (each line 16 bytes)
 		} // end if
 	} // end for
-}
+
+} // dump
 
 /* This function is a printf styled wrapper function for my use of file
  * descriptors in global & main in the scan detection daemon.
@@ -82,7 +88,7 @@ int fdprintf ( int fd, size_t bufmax, const char * fmt, ... ) {
 	free ( buffer );
 	return n;
 
-}
+} // fdprintf
 
 // returns 0 if the strings that str1 and str2 point to are not the same.
 int equals(char * str1, char * str2) {
@@ -94,7 +100,7 @@ int equals(char * str1, char * str2) {
 	}
 	return 0;
 
-}
+} // equals
 
 /* This function writes a timestamp string to the open file descriptor
  * passed to it.
@@ -111,7 +117,7 @@ void timestamp(int fd) {
 	length = strftime(time_buffer, 40, "%m/%d/%Y %H:%M:%S> ", time_struct);
 	write(fd, time_buffer, length); // write timestamp string to log
 
-}
+} // timestamp
 
 /* This function accepts an open file descriptor and returns
  * the size of the associated file. Returns -1 on failure.
@@ -125,7 +131,7 @@ int get_file_size(int fd) {
 
 	return (int) stat_struct.st_size;
 
-}
+} // get_file_size
 
 #endif // MALLOC_DUMP_H
 
