@@ -1,6 +1,8 @@
 #!/bin/bash
 # scan detection daemon by David Weinman <david@weinman.com>
 
+# This file is licensed under The MIT License, see LICENSE for details.
+
 # BT 5 / Kali
 #IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet")
 #IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet"); IP_ADDR="${IP_ADDR/inet addr:/}"; IP_ADDR=${IP_ADDR%%Bcast*}; IP_ADDR=${IP/ /} 

@@ -5,6 +5,8 @@ this stealth scan detection daemon sniffs packets in the background using the pa
 capture library (pcap), filtering out packets with certain flags on, pointed
 at the host computer and logs information to files in ```/var/logs/```.
 
+***dependancies***: neato (part of the graphviz pkg.)
+
 compile pdefdev.c and scan_detector.c, then use the bash wrapper program scandd.
 
 usage: ./scandd [start | stop | status | clear | png]

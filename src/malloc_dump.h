@@ -3,6 +3,8 @@
  * last update: 08/21/13
  * */
 
+/* This file is licensed under The MIT License, see LICENSE for details. */
+
 /* note: this code was heavily influenced by the book 'Hacking:
  * The Art of Exploitation' by Jon Erikson */
 
