@@ -65,8 +65,8 @@ int isUDPkt(const u_char*);
 // host ip string pointer
 char *host_ip;
 
-// global packet capture loop counter, log and graph file descriptors
-int pcap_loop_cnt, logfd, graphfd;
+// global log and graph file descriptors
+int logfd, graphfd;
 
 // This function is called when the process is killed 
 void handle_shutdown(int signal) {
@@ -127,8 +127,6 @@ int main(int argc, char ** argv) {
 	signal(SIGINT, handle_shutdown);
 
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf);
-
-	pcap_loop_cnt = 0;
 
 	while (1) {
 
@@ -223,7 +221,6 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 int isNULLPkt(const u_char *header_start) {
 
 	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)header_start;
-	//fdprintf(logfd, 23, "\ncaught packet #%d\n", ++pcap_loop_cnt);
 
 	return !(tcp_header->tcp_flags & TCP_SYN) && !(tcp_header->tcp_flags & TCP_URG)
 		&& !(tcp_header->tcp_flags & TCP_RST) && !(tcp_header->tcp_flags & TCP_PUSH)
