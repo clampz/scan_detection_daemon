@@ -92,11 +92,11 @@ void scan_fatal(const char *failed_in, const char *errbuf) {
 // for SYN flags in the TCP header
 int main(int argc, char ** argv) {
 
-	int i = 0;
         struct pcap_pkthdr cap_header;
         const u_char *packet, *pkt_data;
         char errbuf[PCAP_ERRBUF_SIZE];
         char *device;
+        int i = 0;
 	pcap_t *pcap_handle;
 	host_ip = argv[1];
 
