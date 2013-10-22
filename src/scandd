@@ -3,14 +3,15 @@
 
 # This file is licensed under The MIT License, see LICENSE for details.
 
+# <disclaimer -- the algorithm used below seems to be system dependant, and I haven't
+#                written a wrapper function to deal with any of that as of yet.>
+
 # BT 5 / Kali
-#IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet")
-#IP_ADDR=$(DEV=$(./pdefdev); ifconfig | grep -A 3 $DEV | grep "inet"); IP_ADDR="${IP_ADDR/inet addr:/}"; IP_ADDR=${IP_ADDR%%Bcast*}; IP_ADDR=${IP/ /} 
 IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
 
 # OSX 11
 # NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
-IP=$(DEV=$(sudo ./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%netmask*}"
+#IP=$(DEV=$(sudo ./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%netmask*}"
 
 PROCESS_ID=$(ps -C scan_detector -o pid= ) 
 
