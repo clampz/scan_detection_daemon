@@ -7,7 +7,7 @@ at the host computer and logs information to files in ```/var/logs/```.
 
 ***Dependancies***: Neato (part of the Graphviz pkg.)
 
-To run the stealth scan detection daemon, compile pdefdev.c and scan_detector.c, then use the bash wrapper program scandd.
+To run the scan detection daemon, compile pdefdev.c and scan_detector.c, then use the bash wrapper program scandd.
 
 ***Usage***: ./scandd [start | stop | status | clear | png]
 
