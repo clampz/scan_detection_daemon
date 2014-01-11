@@ -1,8 +1,8 @@
-stealth scan detection daemon
+nmap scan detection daemon
 =====================
 
-The ***stealth scan detection daemon*** sniffs packets in the background using the packet
-capture library (pcap), filtering out packets with certain flags on, pointed
+The scan detection daemon sniffs packets in the background using the packet
+capture library (pcap), filtering out packets with certain tcp flags (each corresponding to a default nmap scan) on, pointed
 at the host computer and logs information to files in ```/var/logs/```.
 
 ***dependancies***: Neato (part of the Graphviz pkg.)
