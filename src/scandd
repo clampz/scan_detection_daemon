@@ -7,7 +7,10 @@
 #                written a wrapper function to deal with any of that as of yet.>
 
 # BT 5 / Kali
-IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
+#IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
+
+# Debian 7
+IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP="${IP/inet addr:/}"
 
 # OSX 11
 # NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
@@ -56,6 +59,8 @@ if [ "$1" == "start" ]; then
     exit
   fi
 
+  DEV=$(./pdefdev)
+
   ifconfig $DEV promisc
   ./scan_detector $IP 100
 
@@ -65,7 +70,9 @@ elif [ "$1" == "png" ]; then
 # organize the color in the beginning of .neato_dat
 
   
-
+  if [ -f "./.neato_dat" ]; then
+    rm .neato_dat
+  fi
   echo "graph G {" >> .neato_dat
   cat /var/logs/scandetectd_graph.log >> .neato_dat
   echo "overlap=false}" >> .neato_dat
@@ -84,6 +91,7 @@ elif [ "$1" == "stop" ]; then
 elif [ "$1" == "status" ]; then
 
   ps aux > tmp; PS_SD=$(cat tmp | grep scan_detector)
+  rm tmp
   echo "
 $PS_SD
 
