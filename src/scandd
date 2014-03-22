@@ -27,26 +27,26 @@ if [[ ! $# -eq 1 ]]; then
 fi
 
 # check for log files, if they don't exist, then make them.
-if [[ -f "/var/logs/" ]]; then
+if [[ -f "/var/log/" ]]; then
 
-    mkdir /var/logs/
+    mkdir /var/log/
 
 fi
 
-if [[ ! -f "/var/logs/scandetectd_graph.log" ]]; then
+if [[ ! -f "/var/log/scandetectd_graph.log" ]]; then
 
-  touch "/var/logs/scandetectd_graph.log"
-  touch "/var/logs/scandetectd.log"
+  touch "/var/log/scandetectd_graph.log"
+  touch "/var/log/scandetectd.log"
 
 elif [ "$PROCESS_ID" == "" ]; then
 
-  if [ -f "/var/logs/scandetectd.log" ]; then
+  if [ -f "/var/log/scandetectd.log" ]; then
 
-    rm "/var/logs/scandetectd_graph.log"
-    touch "/var/logs/scandetectd_graph.log"
+    rm "/var/log/scandetectd_graph.log"
+    touch "/var/log/scandetectd_graph.log"
 
-    rm "/var/logs/scandetectd.log"
-    touch "/var/logs/scandetectd.log"
+    rm "/var/log/scandetectd.log"
+    touch "/var/log/scandetectd.log"
 
   fi
 
@@ -74,7 +74,7 @@ elif [ "$1" == "png" ]; then
     rm .neato_dat
   fi
   echo "graph G {" >> .neato_dat
-  cat /var/logs/scandetectd_graph.log >> .neato_dat
+  cat /var/log/scandetectd_graph.log >> .neato_dat
   echo "overlap=false}" >> .neato_dat
   NOW=$(date +%F--%R%p); neato -Tpng -o $NOW .neato_dat
   NOW=""
@@ -97,7 +97,7 @@ $PS_SD
 
 -----
 " > printout
-  cat /var/logs/scandetectd.log >> printout
+  cat /var/log/scandetectd.log >> printout
   cat printout | less
   rm printout
   PS_SD=""
@@ -109,8 +109,8 @@ elif [ "$1" == "clear" ]; then
     exit
   fi
 
-  echo "" > /var/logs/scandetectd.log
-  echo "" > /var/logs/scandetectd_graph.log
+  echo "" > /var/log/scandetectd.log
+  echo "" > /var/log/scandetectd_graph.log
 
 else
 

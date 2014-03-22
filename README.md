@@ -11,7 +11,7 @@ To run the scan detection daemon, compile pdefdev.c and scan_detector.c, then us
 
 ***Usage***: ./scandd [start | stop | status | clear | png]
 
-***Install***: ```make; make install```
+***Install***: ```sudo make; sudo make install```
 
 start - run the scan_detector
 

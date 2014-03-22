@@ -48,8 +48,8 @@ int fprintf(FILE * restrict stream, const char * restrict format, ...);
 #include "malloc_dump.h"
 #include "net_structs.h"
 
-#define LOGFILE "/var/logs/scandetectd.log" // log filename
-#define GRAPHFILE "/var/logs/scandetectd_graph.log" // graph log filename
+#define LOGFILE "/var/log/scandetectd.log" // log filename
+#define GRAPHFILE "/var/log/scandetectd_graph.log" // graph log filename
 
 void handle_shutdown(int);
 void scan_fatal(const char *, const char *);
