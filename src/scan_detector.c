@@ -35,6 +35,12 @@ int printf(const char *format, ...);
 int snprintf(char *str, size_t size, const char *format, ...);
 int fprintf(FILE * restrict stream, const char * restrict format, ...);
 
+#include <string.h>
+
+char *strchr(const char *s, int c);
+char *strstr(const char *haystack, const char *needle);
+size_t strlen(const char *s);
+
 */
 
 #include <sys/types.h>
@@ -48,6 +54,8 @@ int fprintf(FILE * restrict stream, const char * restrict format, ...);
 #include "malloc_dump.h"
 #include "net_structs.h"
 
+#define MAX_COLOR_STR_LEN 20
+
 #define LOGFILE "/var/log/scandetectd.log" // log filename
 #define GRAPHFILE "/var/log/scandetectd_graph.log" // graph log filename
 
@@ -55,6 +63,7 @@ void handle_shutdown(int);
 void scan_fatal(const char *, const char *);
 void caught_packet(u_char*, const struct pcap_pkthdr*, const u_char*);
 void alert_user(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char*, int);
+void alert_user_color(const struct eth_hdr*, const struct tcp_hdr*, const struct ip_hdr*, const char *, const char*, int);
 int main(int, char **);
 int isSYNPkt(const u_char*);
 int isFINPkt(const u_char*);
@@ -64,6 +73,21 @@ int isUDPkt(const u_char*);
 
 // host ip string pointer
 char *host_ip;
+
+// color for SYN packet pointer
+char *SYN_color;
+
+// color for FIN packet pointer
+char *FIN_color;
+
+// color for XMAS packet pointer
+char *XMAS_color;
+
+// color for NULL packet pointer
+char *NULL_color;
+
+// color for UDP packet pointer
+char *UDP_color;
 
 // global log and graph file descriptors
 int logfd, graphfd;
@@ -99,6 +123,11 @@ int main(int argc, char ** argv) {
         int i = 0;
 	pcap_t *pcap_handle;
 	host_ip = argv[1];
+	SYN_color = "black";
+	FIN_color = "black";
+	XMAS_color = "black";
+	NULL_color = "black";
+	UDP_color = "black";
 
 	fdprintf(1, 40, "\nscandd running with ip: %s\n", argv[1]);
 
@@ -108,10 +137,40 @@ int main(int argc, char ** argv) {
         if (logfd == -1)
                 fatal("opening log file");
 
+	if (!(argc >= 3 && argc <= 8)) {printf("\nwrong # of args.\n\n"); exit(1);} 
+
+	// parse through arguments looking for the flags and colors, maxlen?   //for (; i < argc; )
+
+	for (i = 3; i < argc; i++) {
+
+		if (strlen(argv[i]) > MAX_COLOR_STR_LEN) fatal("too long of an arg!");
+
+		else if (strstr(argv[i], "SYN") != NULL) {
+			SYN_color = strchr(argv[i], '='); SYN_color++;
+		}
+
+		else if (strstr(argv[i], "FIN") != NULL) {
+			FIN_color = strchr(argv[i], '='); FIN_color++;
+		}
+
+		else if (strstr(argv[i], "XMAS") != NULL) {
+			XMAS_color = strchr(argv[i], '='); XMAS_color++;
+		}
+
+		else if (strstr(argv[i], "NULL") != NULL) {
+			NULL_color = strchr(argv[i], '='); NULL_color++;
+		}
+
+		else if (strstr(argv[i], "UDP") != NULL) {
+			UDP_color = strchr(argv[i], '='); UDP_color++;
+		}
+
+	}
+
+	i = 0;
+
    	timestamp(logfd);
 	write(logfd, "Starting up..\n", 15);
-
-	if (argc != 3) {printf("\nwrong # of args.\n\n"); exit(1);} 
 
 	device = pcap_lookupdev(errbuf);
 
@@ -156,6 +215,20 @@ void alert_user( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_hea
 
 } // alert_user
 
+// this function is like the one above except it has an additional param to color an edge
+void alert_user_color( const struct eth_hdr *eth_header, const struct tcp_hdr *tcp_header,
+
+        const struct ip_hdr *ip_header, const char *color_option, const char *type, int fd) {
+
+        char *src_addr, *dest_addr;
+        int i;
+
+        fdprintf(fd, 45, "\"[%s] src ip: %s\" ", type, inet_ntoa(ip_header->ip_src_addr));
+
+        fdprintf(fd, 54, "-- \"dst ip: %s\" [color=%s];\n\n", inet_ntoa(ip_header->ip_dest_addr), color_option); ////  here
+
+} // alert_user
+
 // function that is called when a packet is caught, checks for a scan on host ip port, calls alert_user if detection comes up true.
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
@@ -179,35 +252,50 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
-			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", graphfd);
+			if (strstr(SYN_color, "black") == NULL)
+				alert_user_color(eth_header, tcp_header, ip_header, SYN_color, "TCP SYN SCAN", graphfd);
+			else
+				alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", graphfd);
 			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", logfd);
 
 		} // SYN if
 		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && ((int) ip_header->ip_type == 6) && ((int) eth_header->ether_type == 8)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN", graphfd);
+			if (strstr(FIN_color, "black") == NULL)
+				alert_user_color(eth_header, tcp_header, ip_header, FIN_color, "FIN SCAN", graphfd);
+			else
+				alert_user(eth_header, tcp_header, ip_header, "FIN SCAN", graphfd);
 			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "FIN SCAN", logfd);
 
 		} // FIN if
 		else if (isXMASPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", graphfd);
+			if (strstr(XMAS_color, "black") == NULL)
+				alert_user_color(eth_header, tcp_header, ip_header, XMAS_color, "XMAS SCAN", graphfd);
+			else
+				alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", graphfd);
 			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", logfd);
 
 		} // XMAS if
 		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 6) && (eth_header->ether_type == 8)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", graphfd);
+			if (strstr(NULL_color, "black") == NULL)
+				alert_user_color(eth_header, tcp_header, ip_header, NULL_color, "NULL SCAN", graphfd);
+			else
+				alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", graphfd);
 			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", logfd);
 
 		} // NULL if
 		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 17) && (eth_header->ether_type == 8)) {
 
-			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", graphfd);
+			if (strstr(UDP_color, "black") == NULL)
+				alert_user_color(eth_header, tcp_header, ip_header, UDP_color, "UDP SCAN", graphfd);
+			else
+				alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", graphfd);
 			timestamp(logfd);
 			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", logfd);
 

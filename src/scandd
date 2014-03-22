@@ -19,7 +19,7 @@ IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP
 PROCESS_ID=$(ps -C scan_detector -o pid= ) 
 
 # if the cl args aren't equal to one, then print usage and exit
-if [[ ! $# -eq 1 ]]; then
+if [[ ! $# -lt 7 ]]; then
 
     echo "Usage: $0 [start | stop | status | clear | png]"
     exit
@@ -62,7 +62,7 @@ if [ "$1" == "start" ]; then
   DEV=$(./pdefdev)
 
   ifconfig $DEV promisc
-  ./scan_detector $IP 100
+  ./scan_detector $IP 100 "$2" "$3" "$4" "$5" "$6"
 
 elif [ "$1" == "png" ]; then
 
