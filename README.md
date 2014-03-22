@@ -9,7 +9,7 @@ at the host computer and logs information to files in ```/var/logs/```.
 
 To run the scan detection daemon, compile pdefdev.c and scan_detector.c, then use the bash wrapper program scandd.
 
-***Usage***: ./scandd [start | stop | status | clear | png]
+***Usage***: scandd [start | stop | status | clear | png]
 
 ***Install***: ```sudo make; sudo make install```
 
