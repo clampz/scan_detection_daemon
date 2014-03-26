@@ -6,69 +6,21 @@
 # <disclaimer -- the algorithm used below seems to be system dependant, and I haven't
 #                written a wrapper function to deal with any of that as of yet.>
 
-# BT 5 / Kali
-#IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
 
-# Debian 7
-IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP="${IP/inet addr:/}"
 
-# OSX 11
-# NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
-#IP=$(DEV=$(sudo ./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%netmask*}"
-
-PROCESS_ID=$(ps -C scan_detector -o pid= ) 
-
-# if the cl args aren't equal to one, then print usage and exit
-if [[ ! $# -lt 7 ]]; then
-
-    echo "Usage: $0 [start | stop | status | clear | png]"
-    exit
-
-fi
-
-# check for log files, if they don't exist, then make them.
-if [[ -f "/var/log/" ]]; then
-
-    mkdir /var/log/
-
-fi
-
-if [[ ! -f "/var/log/scandetectd_graph.log" ]]; then
-
-  touch "/var/log/scandetectd_graph.log"
-  touch "/var/log/scandetectd.log"
-
-elif [ "$PROCESS_ID" == "" ]; then
-
-  if [ -f "/var/log/scandetectd.log" ]; then
-
-    rm "/var/log/scandetectd_graph.log"
-    touch "/var/log/scandetectd_graph.log"
-
-    rm "/var/log/scandetectd.log"
-    touch "/var/log/scandetectd.log"
-
-  fi
-
-fi
-
-if [ "$1" == "start" ]; then
-
-  if [ ! "$PROCESS_ID" == "" ]; then
-    echo "scandd already running!"
-    exit
-  fi
+start_scandd() {
 
   DEV=$(./pdefdev)
 
   ifconfig $DEV promisc
   ./scan_detector $IP 100 "$2" "$3" "$4" "$5" "$6"
 
-elif [ "$1" == "png" ]; then
+}
 
 # count the number of occurences of things to color, 
 # organize the color in the beginning of .neato_dat
 
+make_png() {
   
   if [ -f "./.neato_dat" ]; then
     rm .neato_dat
@@ -79,7 +31,9 @@ elif [ "$1" == "png" ]; then
   NOW=$(date +%F--%R%p); neato -Tpng -o $NOW .neato_dat
   NOW=""
 
-elif [ "$1" == "stop" ]; then
+}
+
+stop_scandd() {
 
   if [ "$PROCESS_ID" == "" ]; then
     echo "error, nothing to kill?"
@@ -88,21 +42,25 @@ elif [ "$1" == "stop" ]; then
 
   kill $PROCESS_ID
 
-elif [ "$1" == "status" ]; then
+}
+
+print_status() {
 
   ps aux > tmp; PS_SD=$(cat tmp | grep scan_detector)
   rm tmp
   echo "
-$PS_SD
+  $PS_SD
 
------
-" > printout
+  -----
+  " > printout
   cat /var/log/scandetectd.log >> printout
   cat printout | less
   rm printout
   PS_SD=""
 
-elif [ "$1" == "clear" ]; then
+}
+
+clear_logs() {
 
   if [ ! "$PROCESS_ID" == "" ]; then
     echo "wait! there's a scan detection daemon running!"
@@ -112,14 +70,83 @@ elif [ "$1" == "clear" ]; then
   echo "" > /var/log/scandetectd.log
   echo "" > /var/log/scandetectd_graph.log
 
-else
+}
+
+echo_usage_exit() {
 
   echo "Usage: $0 [start | stop | status | clear | png]"
   exit
 
-fi
+}
 
-DEV=""
-PROCESS_ID=""
-IP=""
+main() {
 
+# BT 5 / Kali
+#IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
+
+# Debian 7
+  IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP="${IP/inet addr:/}"
+
+# OSX 11
+# NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
+#IP=$(DEV=$(sudo ./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%netmask*}"
+
+  PROCESS_ID=$(ps -C scan_detector -o pid= ) 
+
+# if the cl args aren't less than seven, then print usage and exit
+  if [[ ! $# -lt 7 ]]; then
+
+    echo_usage_exit
+
+  fi
+
+# check for log files, if they don't exist, then make them.
+  if [[ -f "/var/log/" ]]; then
+
+    mkdir /var/log/
+
+  fi
+
+  if [[ ! -f "/var/log/scandetectd_graph.log" ]]; then
+
+    touch "/var/log/scandetectd_graph.log"
+    touch "/var/log/scandetectd.log"
+
+  elif [ "$PROCESS_ID" == "" ]; then
+
+    if [ -f "/var/log/scandetectd.log" ]; then
+
+      rm "/var/log/scandetectd_graph.log"
+      touch "/var/log/scandetectd_graph.log"
+
+      rm "/var/log/scandetectd.log"
+      touch "/var/log/scandetectd.log"
+
+    fi
+
+  fi
+
+  if ["$1" == "start"]; then
+    if [ ! "$PROCESS_ID" == "" ]; then
+      echo "scandd already running!"
+      exit
+    fi
+    start_scandd "$@"
+  elif ["$1" == "png"]; then
+    make_png
+  elif ["$1" == "stop"]; then
+    stop_scandd "$@"
+  elif ["$1" == "status"]; then
+    print_status
+  elif ["$1" == "clear"]; then
+    clear_logs
+  else
+    echo_usage_exit
+  fi
+  DEV=""
+  PROCESS_ID=""
+  IP=""
+
+}
+
+main "$@"

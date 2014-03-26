@@ -117,7 +117,7 @@ void scan_fatal(const char *failed_in, const char *errbuf) {
 } // scan_fatal
 
 // main creates a listener and captures packets while looking 
-// for SYN flags in the TCP header
+// for packets aimed at the given IP from NMAP
 int main(int argc, char ** argv) {
 
         struct pcap_pkthdr cap_header;
@@ -132,6 +132,7 @@ int main(int argc, char ** argv) {
 	XMAS_color = "black";
 	NULL_color = "black";
 	UDP_color = "black";
+	MAMN_color = "black";
 
 	fdprintf(1, 40, "\nscandd running with ip: %s\n", argv[1]);
 
@@ -167,6 +168,10 @@ int main(int argc, char ** argv) {
 
 		else if (strstr(argv[i], "UDP") != NULL) {
 			UDP_color = strchr(argv[i], '='); UDP_color++;
+		}
+
+		else if (strstr(argv[i], "MAMN") != NULL) {
+			MAMN_color = strchr(argv[i], '='); MAMN_color++;
 		}
 
 	}
@@ -233,7 +238,7 @@ void alert_user_color( const struct eth_hdr *eth_header, const struct tcp_hdr *t
 
 } // alert_user
 
-// function that is called when a packet is caught, checks for a scan on host ip port, calls alert_user if detection comes up true.
+// function that is called when a packet is caught, checks for a scan on the given ip, calls alert_user if detection comes up true.
 void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 
 
@@ -249,7 +254,8 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	total_header_size = ETH_HDR_LEN+IP_HDR_LEN+tcp_header_size;
 	pkt_data_len = cap_header->len - total_header_size;
 
-// if neither ip is a loopback addr, and the dest ip in the packet is the host ip
+// if neither ip is a loopback addr, the dest ip in the packet is the given ip, the packet is 60 bytes in length and the tcp header is less than 24 bytes in length;
+// it might be an NMAP scan.
 
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
 	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)
