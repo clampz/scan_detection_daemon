@@ -67,6 +67,7 @@ void alert_user_color(const struct eth_hdr*, const struct tcp_hdr*, const struct
 int main(int, char **);
 int isSYNPkt(const u_char*);
 int isFINPkt(const u_char*);
+int isMAMNPkt(const u_char*);
 int isXMASPkt(const u_char*);
 int isNULLPkt(const u_char*);
 int isUDPkt(const u_char*);
@@ -79,6 +80,9 @@ char *SYN_color;
 
 // color for FIN packet pointer
 char *FIN_color;
+
+// color for MAMN packet pointer
+char *MAMN_color;
 
 // color for XMAS packet pointer
 char *XMAS_color;
@@ -248,7 +252,8 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 // if neither ip is a loopback addr, and the dest ip in the packet is the host ip
 
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
-	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)) {
+	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)
+	    && (cap_header->len == 60) && !(tcp_header_length > 24)) {
 
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 
@@ -260,7 +265,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 			alert_user(eth_header, tcp_header, ip_header, "TCP SYN SCAN", logfd);
 
 		} // SYN if
-		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && ((int) ip_header->ip_type == 6) && ((int) eth_header->ether_type == 8)) {
+		else if (isFINPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && ((int) eth_header->ether_type == 8)) {
 
 			if (strstr(FIN_color, "black") == NULL)
 				alert_user_color(eth_header, tcp_header, ip_header, FIN_color, "FIN SCAN", graphfd);
@@ -280,7 +285,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 			alert_user(eth_header, tcp_header, ip_header, "XMAS SCAN", logfd);
 
 		} // XMAS if
-		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 6) && (eth_header->ether_type == 8)) {
+		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
 
 			if (strstr(NULL_color, "black") == NULL)
 				alert_user_color(eth_header, tcp_header, ip_header, NULL_color, "NULL SCAN", graphfd);
@@ -290,7 +295,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 			alert_user(eth_header, tcp_header, ip_header, "NULL SCAN", logfd);
 
 		} // NULL if
-		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 17) && (eth_header->ether_type == 8)) {
+		else if (isNULLPkt(packet+ETH_HDR_LEN+IP_HDR_LEN) && (ip_header->ip_type == 17)) {
 
 			if (strstr(UDP_color, "black") == NULL)
 				alert_user_color(eth_header, tcp_header, ip_header, UDP_color, "UDP SCAN", graphfd);
@@ -300,6 +305,16 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 			alert_user(eth_header, tcp_header, ip_header, "UDP SCAN", logfd);
 
 		} // UDP if
+		else if (isMAMNPkt(packet+ETH_HDR_LEN+IP_HDR_LEN)) {
+
+			if (strstr(UDP_color, "black") == NULL)
+				alert_user_color(eth_header, tcp_header, ip_header, MAMN_color, "MAMN SCAN", graphfd);
+			else
+				alert_user(eth_header, tcp_header, ip_header, "MAMN SCAN", graphfd);
+			timestamp(logfd);
+			alert_user(eth_header, tcp_header, ip_header, "MAMN SCAN", logfd);
+
+		} // MAMN if
 
 	}
 
@@ -315,6 +330,24 @@ int isNULLPkt(const u_char *header_start) {
 		&& !(tcp_header->tcp_flags & TCP_ACK) && !(tcp_header->tcp_flags & TCP_FIN);
 
 } // isNULLPkt
+
+// takes TCP header and checks for FIN and ACK flags, returns 1 if true
+int isMAMNPkt(const u_char *header_start) {
+
+	const struct tcp_hdr *tcp_header = (const struct tcp_hdr *)header_start;
+
+	if (tcp_header->tcp_flags & TCP_SYN) return 0;
+
+	if (tcp_header->tcp_flags & TCP_URG) return 0; 
+	
+	if (tcp_header->tcp_flags & TCP_RST) return 0;
+
+	if (tcp_header->tcp_flags & TCP_PUSH) return 0;
+
+	return tcp_header->tcp_flags & TCP_FIN && tcp_header->tcp_flags & TCP_ACK;
+	
+
+} // isMAMNPkt
 
 // takes TCP header and checks for FIN flags, returns 1 if true
 int isFINPkt(const u_char *header_start) {
