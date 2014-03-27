@@ -5,7 +5,9 @@ The scan detection daemon sniffs packets using a packet capture library (pcap), 
 
 ***Dependancies***: Neato (part of the Graphviz pkg) and pcap.
 
-***Usage***: scandd [start [SCAN_TYPE=color] | startwith IP_ADDR [SCAN_TYPE=color] | stop | status | clear | png]
+***Usage***: ```scandd [start [SCAN_TYPE=color] | startwith IP_ADDR [SCAN_TYPE=color] | stop | status | clear | png]```
+
+***Example***: ```scandd startwith 192.168.0.20 "SYN=red" "MAMN=lawngreen"```
 
 ***Install***: ```make; sudo make install```
 
