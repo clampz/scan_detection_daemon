@@ -150,6 +150,9 @@ int main(int argc, char ** argv) {
 
 	if (!(argc >= 3 && argc <= 9)) {printf("\nwrong # of args.\n\n"); exit(1);} 
 
+	if (!(strlen(argv[1]) <= 10))
+		fatal("host ip argument length larger than max ip len: 10."); 
+
 	// parse through arguments looking for the flags and colors, maxlen?   //for (; i < argc; )
 
 	for (i = 3; i < argc; i++) {
