@@ -8,6 +8,12 @@
 /* note: this code was influenced by Jon Erikson's
    'Hacking: The Art of Exploitation' */
 
+/* spawns a daemon that sniffs packets
+ * filtering out ones pointed at the given
+ * ip and with a 60 byte packet length and
+ * and a tcp header length < 24 bytes.
+ * */
+
 /*
 
 #include <pcap/pcap.h>
@@ -142,7 +148,7 @@ int main(int argc, char ** argv) {
         if (logfd == -1)
                 fatal("opening log file");
 
-	if (!(argc >= 3 && argc <= 8)) {printf("\nwrong # of args.\n\n"); exit(1);} 
+	if (!(argc >= 3 && argc <= 9)) {printf("\nwrong # of args.\n\n"); exit(1);} 
 
 	// parse through arguments looking for the flags and colors, maxlen?   //for (; i < argc; )
 
@@ -254,12 +260,12 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	total_header_size = ETH_HDR_LEN+IP_HDR_LEN+tcp_header_size;
 	pkt_data_len = cap_header->len - total_header_size;
 
-// if neither ip is a loopback addr, the dest ip in the packet is the given ip, the packet is 60 bytes in length and the tcp header is less than 24 bytes in length;
-// it might be an NMAP scan.
+// if neither ip is a loopback addr, the dest ip in the packet is the given ip, the packet is 60 bytes in length and the tcp header
+// is less than 24 bytes in length; it might be an NMAP scan.
 
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
 	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)
-	    && (cap_header->len == 60) && !(tcp_header_length > 24)) {
+	    && (cap_header->len == 60) && !(tcp_header_length > 24) ) {
 
 		if (isSYNPkt(packet+ETH_HDR_LEN+sizeof(struct ip_hdr))) {
 

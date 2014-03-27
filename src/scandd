@@ -4,8 +4,19 @@
 # This file is licensed under The MIT License, see LICENSE for details.
 
 # <disclaimer -- the algorithm used below seems to be system dependant, and I haven't
-#                written a wrapper function to deal with any of that as of yet.>
+#                written a wrapper function to deal with any of that as of yet. As of
+#		 now it assumes a debian or debian-based distro because of the way ifconfig
+#		 is parsed to get the ip.>
 
+# start the scan_detector background process with a given ip addr
+startwith_scandd() {
+
+  DEV=$(/usr/sbin/pdefdev)
+
+  ifconfig $DEV promisc
+  /usr/sbin/scan_detector $2 100 "$3" "$4" "$5" "$6" "$7" "$8"
+
+}
 
 # start the scan_detector background process
 start_scandd() {
@@ -13,7 +24,7 @@ start_scandd() {
   DEV=$(/usr/sbin/pdefdev)
 
   ifconfig $DEV promisc
-  /usr/sbin/scan_detector $IP 100 "$2" "$3" "$4" "$5" "$6"
+  /usr/sbin/scan_detector $IP 100 "$2" "$3" "$4" "$5" "$6" "$7"
 
 }
 
@@ -76,7 +87,7 @@ clear_logs() {
 # show the usage
 echo_usage_exit() {
 
-  echo "Usage: scandd [start | stop | status | clear | png]"
+  echo "Usage: scandd [start [SCAN_TYPE=color] | startwith IP_ADDR [SCAN_TYPE=color] | stop | status | clear | png]"
   exit
 
 }
@@ -89,14 +100,13 @@ main() {
 # Debian 7
   IP=$(DEV=$(/usr/sbin/pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP="${IP/inet addr:/}"
 
-# OSX 11
-# NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
+# OSX 10.9?
 #IP=$(DEV=$(sudo ./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%netmask*}"
 
   PROCESS_ID=$(ps -C scan_detector -o pid= ) 
 
-# if the cl args aren't less than seven, then print usage and exit
-  if [[ ! $# -lt 7 ]]; then
+# if the cl args aren't less than nine, print usage and exit
+  if [[ ! $# -lt 9 ]]; then
 
     echo_usage_exit
 
@@ -114,21 +124,15 @@ main() {
     touch "/var/log/scandetectd_graph.log"
     touch "/var/log/scandetectd.log"
 
-#  elif [ "$PROCESS_ID" == "" ]; then
-
-#    if [ -f "/var/log/scandetectd.log" ]; then
-
-#      rm "/var/log/scandetectd_graph.log"
-#      touch "/var/log/scandetectd_graph.log"
-
-#      rm "/var/log/scandetectd.log"
-#      touch "/var/log/scandetectd.log"
-
-#    fi
-
   fi
 
-  if [ "$1" == "start" ]; then
+  if [ "$1" == "startwith" ]; then
+    if [ ! "$PROCESS_ID" == "" ]; then
+      echo "scandd already running!"
+      exit
+    fi
+    startwith_scandd "$@"
+  elif [ "$1" == "start" ]; then
     if [ ! "$PROCESS_ID" == "" ]; then
       echo "scandd already running!"
       exit
@@ -137,7 +141,7 @@ main() {
   elif [ "$1" == "png" ]; then
     make_png
   elif [ "$1" == "stop" ]; then
-    stop_scandd "$@"
+    stop_scandd
   elif [ "$1" == "status" ]; then
     print_status
   elif [ "$1" == "clear" ]; then
