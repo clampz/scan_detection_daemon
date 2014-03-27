@@ -15,7 +15,7 @@ Now, you can start scandd like so: scandd start "[SYN, FIN, NULL, XMAS, MAMN, UD
 
 ***Install***: ```make; sudo make install```
 
-*** NOTE: because pcap requires root privs, running scandd also requires the user to be root. To become root user, use the following command: *** ```su root```
+***NOTE***: because pcap requires root privs, running scandd also requires the user to be root. To become root user, use the following command: ```su root```
 
 start - run the scan_detector
 
