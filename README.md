@@ -5,7 +5,7 @@ The scan detection daemon sniffs packets using a packet capture library (pcap), 
 
 ***Dependancies***: Neato (part of the Graphviz pkg) and pcap.
 
-***Usage***: ```scandd [start [SCAN_TYPE=color] | startwith IP_ADDR [SCAN_TYPE=color] | stop | status | clear | png]```
+***Usage***: ```scandd [start [SCAN_TYPE=color] | startwith IP [SCAN_TYPE=color] | stop | status | clear | png]```
 
 ***Example***: ```scandd startwith 192.168.0.20 "SYN=red" "MAMN=lawngreen"```
 
@@ -21,5 +21,9 @@ status - print the scan detector's logs
 
 clear - erase the scan detector's logs
 
-png - draw a graph of captured scans
+png - draw an undirected graph of captured scans
+
+an example graph of a scan might be:
+
+![alt text](https://raw.githubusercontent.com/clampz/scan_detection_daemon/master/ex/example_scan_detect.png "Example NMAP Scan 1")
 
