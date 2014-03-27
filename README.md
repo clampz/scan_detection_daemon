@@ -1,15 +1,11 @@
-nmap scan detection daemon
+NMAP scan detection daemon
 =====================
 
-The scan detection daemon sniffs packets in the background using the packet capture library (pcap), filtering out certain packets (based on default nmap scans, UDP or TCP [SYN, FIN, NULL, XMAS, MAMN]), pointed at the host computer and logs information to files in ```/var/log/```.
+The scan detection daemon sniffs packets using a packet capture library (pcap), filtering out certain (60 byte packet len and < 24 byte tcp header len) packets (based on default NMAP scans, UDP or TCP [SYN, FIN, NULL, XMAS, MAMN]), pointed at the host (or a given) computer and logs information to files in ```/var/log/```.
 
 ***Dependancies***: Neato (part of the Graphviz pkg) and pcap.
 
-To run the scan detection daemon, compile pdefdev.c and scan_detector.c, then use the bash wrapper program scandd.
-
-***Usage***: scandd [start | stop | status | clear | png]
-
-Now, you can start scandd like so: scandd start "[SYN, FIN, NULL, XMAS, MAMN, UDP]=color", where the color can be color defined in your version of neato., For example ```scandd start "SYN=red"```
+***Usage***: scandd [start [SCAN_TYPE=color] | startwith IP_ADDR [SCAN_TYPE=color] | stop | status | clear | png]
 
 ***Install***: ```make; sudo make install```
 
@@ -24,3 +20,4 @@ status - print the scan detector's logs
 clear - erase the scan detector's logs
 
 png - draw a graph of captured scans
+
