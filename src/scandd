@@ -7,19 +7,17 @@
 #                written a wrapper function to deal with any of that as of yet.>
 
 
-
+# start the scan_detector background process
 start_scandd() {
 
-  DEV=$(./pdefdev)
+  DEV=$(/usr/sbin/pdefdev)
 
   ifconfig $DEV promisc
-  ./scan_detector $IP 100 "$2" "$3" "$4" "$5" "$6"
+  /usr/sbin/scan_detector $IP 100 "$2" "$3" "$4" "$5" "$6"
 
 }
 
-# count the number of occurences of things to color, 
-# organize the color in the beginning of .neato_dat
-
+# make a graph
 make_png() {
   
   if [ -f "./.neato_dat" ]; then
@@ -28,11 +26,12 @@ make_png() {
   echo "graph G {" >> .neato_dat
   cat /var/log/scandetectd_graph.log >> .neato_dat
   echo "overlap=false}" >> .neato_dat
-  NOW=$(date +%F--%R%p); neato -Tpng -o $NOW .neato_dat
+  NOW=$(date +%F--%R%p); neato -Tpng -o $NOW.png .neato_dat
   NOW=""
 
 }
 
+# kill the scan_detector process
 stop_scandd() {
 
   if [ "$PROCESS_ID" == "" ]; then
@@ -44,6 +43,7 @@ stop_scandd() {
 
 }
 
+# display the logs currently along with the current process information
 print_status() {
 
   ps aux > tmp; PS_SD=$(cat tmp | grep scan_detector)
@@ -60,6 +60,7 @@ print_status() {
 
 }
 
+# remove and re-create the logs
 clear_logs() {
 
   if [ ! "$PROCESS_ID" == "" ]; then
@@ -72,9 +73,10 @@ clear_logs() {
 
 }
 
+# show the usage
 echo_usage_exit() {
 
-  echo "Usage: $0 [start | stop | status | clear | png]"
+  echo "Usage: scandd [start | stop | status | clear | png]"
   exit
 
 }
@@ -85,7 +87,7 @@ main() {
 #IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
 
 # Debian 7
-  IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP="${IP/inet addr:/}"
+  IP=$(DEV=$(/usr/sbin/pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP="${IP/inet addr:/}"
 
 # OSX 11
 # NOTE: I found that my 'pdefdev.c program needs root privs to run, when I was working on it in os x.'
@@ -112,33 +114,33 @@ main() {
     touch "/var/log/scandetectd_graph.log"
     touch "/var/log/scandetectd.log"
 
-  elif [ "$PROCESS_ID" == "" ]; then
+#  elif [ "$PROCESS_ID" == "" ]; then
 
-    if [ -f "/var/log/scandetectd.log" ]; then
+#    if [ -f "/var/log/scandetectd.log" ]; then
 
-      rm "/var/log/scandetectd_graph.log"
-      touch "/var/log/scandetectd_graph.log"
+#      rm "/var/log/scandetectd_graph.log"
+#      touch "/var/log/scandetectd_graph.log"
 
-      rm "/var/log/scandetectd.log"
-      touch "/var/log/scandetectd.log"
+#      rm "/var/log/scandetectd.log"
+#      touch "/var/log/scandetectd.log"
 
-    fi
+#    fi
 
   fi
 
-  if ["$1" == "start"]; then
+  if [ "$1" == "start" ]; then
     if [ ! "$PROCESS_ID" == "" ]; then
       echo "scandd already running!"
       exit
     fi
     start_scandd "$@"
-  elif ["$1" == "png"]; then
+  elif [ "$1" == "png" ]; then
     make_png
-  elif ["$1" == "stop"]; then
+  elif [ "$1" == "stop" ]; then
     stop_scandd "$@"
-  elif ["$1" == "status"]; then
+  elif [ "$1" == "status" ]; then
     print_status
-  elif ["$1" == "clear"]; then
+  elif [ "$1" == "clear" ]; then
     clear_logs
   else
     echo_usage_exit
