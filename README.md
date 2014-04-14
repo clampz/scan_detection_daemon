@@ -7,7 +7,7 @@ The scan detection daemon sniffs packets using a packet capture library (pcap), 
 
 ***Usage***: ```scandd [start [SCAN_TYPE=color] | startwith IP [SCAN_TYPE=color] | stop | status | clear | png]```
 
-***Example***: ```scandd startwith 192.168.0.20 "SYN=red" "MAMN=lawngreen"``` starts the scan detection daemon with a given ip address and colors the respective given scan types.
+***Example***: ```scandd startwith 10.0.1.70 "SYN=blue" "XMAS=lawngreen"``` starts the scan detection daemon with a given ip address and colors SYN scans as blue, and XMAS scans lawn green when you create a graph.
 
 ***Install***: (Debian Linux) ```make; sudo make install```
 
@@ -25,7 +25,7 @@ clear - erase the scan detector's logs
 
 png - draw an undirected graph of captured scans
 
-An example graph:
+Example graph (after starting the scandd with the example command above, perhaps ```scandd png``` will output something like the following):
 
 ![alt text](https://raw.githubusercontent.com/clampz/scan_detection_daemon/master/ex/example_scan_detect.png "Example NMAP Scan 1")
 

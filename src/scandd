@@ -97,7 +97,7 @@ main() {
 # BT 5 / Kali
 #IP=$(DEV=$(./pdefdev); ifconfig $DEV | grep -o "192.*"); IP="${IP%%Bcast*}"; IP=${IP/ /}
 
-# Debian 7
+# Debian 7 w. ifconfig version 1.42 (2001-04-13)
   IP=$(DEV=$(/usr/sbin/pdefdev); ifconfig $DEV | grep "inet addr"); IP="${IP%%Bcast*}"; IP="${IP/inet addr:/}"
 
 # OSX 10.9?
