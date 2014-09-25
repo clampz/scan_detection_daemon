@@ -5,7 +5,7 @@ The scan detection daemon sniffs packets using a packet capture library (pcap), 
 
 ***NOTE***: The author of this software has not optimized this design for elimination of false positives. A test for false positives was preformed while the target host is running a web server, this program's filtering mechanisms were found to be sufficient during this test.
 
-Additionally, starting the scan detector does require root user privilages as using libpcap also requires root.
+Additionally, starting the scan detector does require root user privileges as using libpcap also requires root.
 
 ***Dependancies***: neato (part of the [Graphviz](https://packages.debian.org/wheezy/libgraphviz-dev) pkg) and [pcap](https://packages.debian.org/squeeze/libpcap-dev).
 
