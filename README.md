@@ -13,7 +13,7 @@ Additionally, starting the scan detector does require root user privileges as us
 
 ***Example***: ```scandd startwith 10.0.1.70 "SYN=blue" "XMAS=lawngreen"``` starts the scan detection daemon with a given ip address and colors SYN scans as blue, and XMAS scans lawn green when you create a graph.
 
-***Install***: (Debian Linux) ```make; sudo make install```
+***Install***: (as root on [Debian - like] Linux distros) ```make; make install```
 
 start - run the scan_detector
 
