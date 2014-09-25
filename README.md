@@ -3,7 +3,9 @@ NMAP scan detection daemon
 
 The scan detection daemon sniffs packets using a packet capture library (pcap), filtering out certain (60 byte packet len and < 24 byte tcp header len) packets (based on default NMAP scans, UDP or TCP [SYN, FIN, NULL, XMAS, MAMN]), pointed at the host (or a given) computer and logs information to files in ```/var/log/```.
 
-The author of this software has not optimized this design for elimination of false positives. A test for false positives was preformed while the target host is running a web server, this program's filtering mechanisms were found to be sufficient during this test.
+***NOTE***: The author of this software has not optimized this design for elimination of false positives. A test for false positives was preformed while the target host is running a web server, this program's filtering mechanisms were found to be sufficient during this test.
+
+Additionally, starting the scan detector does require root user privilages as using libpcap also requires root.
 
 ***Dependancies***: neato (part of the [Graphviz](https://packages.debian.org/wheezy/libgraphviz-dev) pkg) and [pcap](https://packages.debian.org/squeeze/libpcap-dev).
 
@@ -12,8 +14,6 @@ The author of this software has not optimized this design for elimination of fal
 ***Example***: ```scandd startwith 10.0.1.70 "SYN=blue" "XMAS=lawngreen"``` starts the scan detection daemon with a given ip address and colors SYN scans as blue, and XMAS scans lawn green when you create a graph.
 
 ***Install***: (Debian Linux) ```make; sudo make install```
-
-***NOTE***: because pcap requires root privs, running scandd also requires the user to be root. To become root user, use the following command: ```su root```
 
 start - run the scan_detector
 
