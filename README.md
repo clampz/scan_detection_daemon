@@ -3,7 +3,7 @@ NMAP scan detection daemon
 
 The scan detection daemon sniffs packets using a packet capture library (pcap), filtering out certain (60 byte packet len and < 24 byte tcp header len) packets (based on default NMAP scans, UDP or TCP [SYN, FIN, NULL, XMAS, MAMN]), pointed at the host (or a given) computer and logs information to files in ```/var/log/```.
 
-***NOTE***: The author of this software has not optimized this design for elimination of false positives. A test for false positives was preformed while the target host is running a web server, this program's filtering mechanisms were found to be sufficient during this test.
+***NOTE***: The author of this software has not optimized this design for elimination of false positives. A test for false positives was preformed while the target host is running a web server hosting a simple blogging website, this program's filtering mechanisms were found to be sufficient during this test.
 
 Additionally, starting the scan detector does require root user privileges as using libpcap also requires root.
 
