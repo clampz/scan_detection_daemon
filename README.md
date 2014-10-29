@@ -7,13 +7,13 @@ The scan detection daemon sniffs packets using a packet capture library (pcap), 
 
 Additionally, starting the scan detector does require root user privileges as using libpcap also requires root.
 
+***Example***: ```scandd startwith 10.0.1.70 "SYN=blue" "XMAS=lawngreen"``` starts the scan detection daemon with a given ip address and colors SYN scans as blue, and XMAS scans lawn green when you create an graph with the ```scandd png``` command (See example graph at the bottom).
+
 ***Dependancies***: neato (part of the [Graphviz](https://packages.debian.org/wheezy/libgraphviz-dev) pkg) and [pcap](https://packages.debian.org/squeeze/libpcap-dev).
 
-***Usage***: ```scandd [start [SCAN_TYPE=color] | startwith IP [SCAN_TYPE=color] | stop | status | clear | png]```
-
-***Example***: ```scandd startwith 10.0.1.70 "SYN=blue" "XMAS=lawngreen"``` starts the scan detection daemon with a given ip address and colors SYN scans as blue, and XMAS scans lawn green when you create an graph with the ```scandd png``` command.
-
 ***Install***: (as root on [Debian - like] Linux distros) ```make; make install```
+
+***Usage***: ```scandd [start [SCAN_TYPE=color] | startwith IP [SCAN_TYPE=color] | stop | status | clear | png]```
 
 start - run the scan_detector
 
