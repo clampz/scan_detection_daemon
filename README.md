@@ -1,7 +1,7 @@
 NMAP scan detection daemon
 =====================
 
-The scan detection daemon sniffs packets using a packet capture library (pcap), filtering out certain (60 byte packet len and < 24 byte tcp header len) packets (based on default NMAP scans, UDP or TCP [SYN, FIN, NULL, XMAS, MAMN]), pointed at the host (or a given) computer and logs information to files in ```/var/log/```.
+The scan detection daemon sniffs packets using a packet capture library ([libpcap](http://www.tcpdump.org/)), filtering out certain packets (with 60 byte total length and less than 25 byte tcp header length which was based on default NMAP scans, UDP or TCP [SYN, FIN, NULL, XMAS, MAMN]), pointed at the host (or a given) computer and logs information to files in ```/var/log/```.
 
 ***NOTE***: The author of this software has not optimized this design for elimination of false positives. A test for false positives was preformed while the target host is running a web server hosting a simple blogging website, this program's filtering mechanisms were found to be sufficient during this test.
 
@@ -9,9 +9,9 @@ Additionally, starting the scan detector does require root user privileges as us
 
 ***Example***: ```scandd startwith 10.0.1.70 "SYN=blue" "XMAS=lawngreen"``` starts the scan detection daemon with a given ip address and colors SYN scans as blue, and XMAS scans lawn green when you create a graph with the ```scandd png``` command (See example graph at the bottom).
 
-***Dependancies***: neato (part of the [Graphviz](https://packages.debian.org/wheezy/libgraphviz-dev) pkg) and [pcap](https://packages.debian.org/squeeze/libpcap-dev).
+***Dependancies***: neato (part of the [graphviz](https://packages.debian.org/wheezy/libgraphviz-dev) package) and [libpcap-dev](https://packages.debian.org/squeeze/libpcap-dev).
 
-***Install***: (as root on [Debian - like] Linux distros) ```make; make install```
+***Install***: (as root on [Debian-like] linux distros) ```make; make install```
 
 ***Usage***: ```scandd [start [SCAN_TYPE=color] | startwith IP [SCAN_TYPE=color] | stop | status | clear | png]```
 

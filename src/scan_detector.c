@@ -264,7 +264,7 @@ void caught_packet(u_char *user_args, const struct pcap_pkthdr *cap_header, cons
 	pkt_data_len = cap_header->len - total_header_size;
 
 // if neither ip is a loopback addr, the dest ip in the packet is the given ip, the packet is 60 bytes in length and the tcp header
-// is less than 24 bytes in length; it might be an NMAP scan.
+// is less than 25 bytes in length; it might be an NMAP scan.
 
 	if ( equals(inet_ntoa(ip_header->ip_dest_addr), host_ip)
 	    && !(ip_header->ip_src_addr.s_addr == 0) && !(ip_header->ip_dest_addr.s_addr == 0)
