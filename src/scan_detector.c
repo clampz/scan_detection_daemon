@@ -11,7 +11,7 @@
 /* spawns a daemon that sniffs packets
  * filtering out ones pointed at the given
  * ip and with a 60 byte packet length and
- * and a tcp header length < 24 bytes.
+ * and a tcp header length < 25 bytes.
  * */
 
 /*
